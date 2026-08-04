@@ -1,4 +1,3 @@
-
 -- ------------------------------------------------------------
 -- 1. 유저 및 인증 도메인
 -- ------------------------------------------------------------
@@ -16,7 +15,7 @@ CREATE TABLE user_allergy (
                               id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,  -- 알레르기 설정 고유 ID
                               user_id       BIGINT NOT NULL,                                  -- 회원 ID
                               ingredient_id BIGINT NOT NULL,                                  -- 알레르기 성분 ID
-                              created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- 설정 일시  (※ 쉼표 누락 수정)
+                              created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- 설정 일시
                               CONSTRAINT fk_user_allergy_user FOREIGN KEY (user_id) REFERENCES users(id),
     -- ingredient FK는 ingredient 테이블 생성 이후 추가
                               CONSTRAINT uk_user_allergy_user_ingredient UNIQUE (user_id, ingredient_id)
@@ -26,7 +25,7 @@ CREATE TABLE user_preferred_ingredient (
                                            id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,  -- 선호 성분 설정 고유 ID
                                            user_id       BIGINT NOT NULL,                                  -- 회원 ID
                                            ingredient_id BIGINT NOT NULL,                                  -- 선호 성분 ID
-                                           created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- 설정 일시  (※ 쉼표 누락 수정)
+                                           created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- 설정 일시
                                            CONSTRAINT fk_user_pref_ingredient_user FOREIGN KEY (user_id) REFERENCES users(id),
     -- ingredient FK는 ingredient 테이블 생성 이후 추가
                                            CONSTRAINT uk_user_pref_ingredient_user_ingredient UNIQUE (user_id, ingredient_id)
@@ -40,6 +39,7 @@ CREATE TABLE email_verification (
                                     is_verified BOOLEAN NOT NULL DEFAULT FALSE,                     -- 인증 성공 여부
                                     CONSTRAINT uk_email_verification_email UNIQUE (email)
 );
+-- 참고: 실제 개발 시 인증코드 재발송은 UPSERT(ON CONFLICT ON CONSTRAINT uk_email_verification_email DO UPDATE ...) 방식 고려
 
 -- ------------------------------------------------------------
 -- 2. 상품 및 성분 도메인
@@ -47,7 +47,8 @@ CREATE TABLE email_verification (
 
 CREATE TABLE category (
                           id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,              -- 카테고리 고유 ID
-                          name VARCHAR(50) NOT NULL                                          -- 카테고리명 (음료류 등)
+                          name VARCHAR(50) NOT NULL,                                         -- 카테고리명 (음료류 등)
+                          CONSTRAINT uk_category_name UNIQUE (name)
 );
 
 -- 카테고리 시드 데이터 (product 데이터 매핑 시 이 id 값 기준으로 사용)
@@ -62,6 +63,7 @@ CREATE TABLE product (
                          external_code    VARCHAR(100),                                     -- 식약처 품목제조보고번호 등 외부 식별 코드
                          name             VARCHAR(100) NOT NULL,                            -- 상품명
                          image_url        VARCHAR(255),                                     -- 상품 썸네일 이미지 주소
+                         raw_materials    TEXT,                                             -- 전체 원재료
                          grade            SMALLINT NOT NULL,                                -- 제로픽 등급 (1, 2, 3)
                          warning_additive BOOLEAN NOT NULL DEFAULT FALSE,                   -- 유해 첨가물 포함 여부
                          calories         INT NOT NULL,                                     -- 총 칼로리 함량 (kcal)
@@ -80,10 +82,11 @@ CREATE TABLE ingredient (
                             risk_level         VARCHAR(20) NOT NULL,                            -- 위험도 (PREMIUM, GENERAL, WARNING)
                             summary            VARCHAR(100),                                    -- 뱃지 요약 텍스트
                             description        TEXT,                                            -- 팝업용 상세 설명 텍스트
+                            CONSTRAINT uk_ingredient_name UNIQUE (name),
                             CONSTRAINT uk_ingredient_code UNIQUE (code)
 );
 
--- 앞서 미뤄둔 FK를 여기서 추가
+-- 앞서 미뤄둔 FK를 여기서 추가 (ingredient 테이블 생성 이후)
 ALTER TABLE user_allergy
     ADD CONSTRAINT fk_user_allergy_ingredient FOREIGN KEY (ingredient_id) REFERENCES ingredient(id);
 
