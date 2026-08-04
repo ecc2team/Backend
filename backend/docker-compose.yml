@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: zeropick-db
+    environment:
+      POSTGRES_DB: zeropick
+      POSTGRES_USER: zeropick
+      POSTGRES_PASSWORD: zeropick
+    ports:
+      - "5432:5432"
+    volumes:
+      - zeropick_pgdata:/var/lib/postgresql/data
+
+volumes:
+  zeropick_pgdata:
