@@ -1,6 +1,5 @@
-package com.zeropick.backend.repository;
+package com.zeropick.backend.user;
 
-import com.zeropick.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

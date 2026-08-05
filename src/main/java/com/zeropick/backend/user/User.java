@@ -1,4 +1,4 @@
-package com.zeropick.backend.entity;
+package com.zeropick.backend.user;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
