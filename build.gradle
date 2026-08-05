@@ -25,6 +25,8 @@ dependencies {
 	implementation 'org.flywaydb:flyway-database-postgresql'
 
 	runtimeOnly 'org.postgresql:postgresql'
+	
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
