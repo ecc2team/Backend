@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.security.AuthProvider;
+import com.zeropick.backend.user.AuthProvider;
 import java.time.OffsetDateTime;
 
 @Entity
