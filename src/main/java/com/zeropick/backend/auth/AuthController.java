@@ -3,6 +3,7 @@ package com.zeropick.backend.auth;
 import com.zeropick.backend.auth.dto.LoginRequest;
 import com.zeropick.backend.auth.dto.SignupRequest;
 import com.zeropick.backend.auth.dto.TokenResponse;
+import com.zeropick.backend.global.security.JwtUtil;
 import com.zeropick.backend.user.AuthProvider;
 import com.zeropick.backend.user.User;
 import com.zeropick.backend.user.UserRepository;
