@@ -2,6 +2,8 @@ package com.zeropick.backend.email;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ public class EmailVerificationService {
     private static final long COOLDOWN_MINUTES = 3;
 
     private final EmailVerificationRepository emailVerificationRepository;
+    private final JavaMailSender mailSender;
 
     @Transactional
     public void sendCode(String email) {
@@ -75,8 +78,12 @@ public class EmailVerificationService {
     }
 
     private void sendEmail(String to, String code) {
-        //TODO: 실제 SMTP 연동 전까지 콘솔 출력으로 테스트
-        log.info("[인증코드 발송] to={}, code={}", to, code);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("[ZeroPick] 이메일 인증코드");
+        message.setText("인증코드: " + code + "\n\n이 코드는 " + CODE_EXPIRATION_MINUTES + "분 동안 유효합니다.");
+        mailSender.send(message);
+        log.info("[인증코드 발송 완료] to={}", to);
     }
 
 }
