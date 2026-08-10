@@ -15,7 +15,7 @@ public class Product {
     private Long id;
 
     private String name;
-    private Integer grade;
+    private Short grade;
     private Boolean warningAdditive;
     private Integer calories;
     private BigDecimal sugar;

@@ -17,14 +17,11 @@ public class ProductCompareResponse {
     public static class ComparisonItem {
         private Long productId;
         private String productName;
-        private Integer grade;
+        private Short grade;
         private Boolean warningAdditive;
         private Nutrition nutrition;
         private KeyIngredients keyIngredients;
         private List<String> allergies;
-
-        public ComparisonItem(Long id, String name, String grade, String warningAdditive, Nutrition nutrition, KeyIngredients keyIngredients, List<String> of) {
-        }
     }
 
     @Getter
