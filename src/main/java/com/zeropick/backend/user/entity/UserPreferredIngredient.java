@@ -1,5 +1,6 @@
 package com.zeropick.backend.user.entity;
 
+import com.zeropick.backend.ingredient.entity.Ingredient;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
