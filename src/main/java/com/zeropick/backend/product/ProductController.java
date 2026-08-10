@@ -1,4 +1,4 @@
-package com.zeropick.backend.product.controller;
+package com.zeropick.backend.product;
 
 import com.zeropick.backend.product.dto.ProductDetailResponse;
 import com.zeropick.backend.product.dto.RecentProductsResponse;
@@ -51,3 +51,4 @@ public class ProductController {
 
         return ResponseEntity.ok(response);
     }
+}
