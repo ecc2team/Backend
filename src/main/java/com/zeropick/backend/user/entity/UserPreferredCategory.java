@@ -1,7 +1,7 @@
 package com.zeropick.backend.user.entity;
 
 import jakarta.persistence.*;
-import jdk.jfr.Category;
+import com.zeropick.backend.category.Category;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
