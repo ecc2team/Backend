@@ -22,6 +22,9 @@ public class ProductCompareResponse {
         private Nutrition nutrition;
         private KeyIngredients keyIngredients;
         private List<String> allergies;
+
+        public ComparisonItem(Long id, String name, String grade, String warningAdditive, Nutrition nutrition, KeyIngredients keyIngredients, List<String> of) {
+        }
     }
 
     @Getter

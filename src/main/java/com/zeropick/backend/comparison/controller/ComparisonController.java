@@ -1,7 +1,7 @@
 package com.zeropick.backend.comparison.controller;
 
-import com.zeropick.backend.comparison.dto.ComparisonToggleRequest;
-import com.zeropick.backend.comparison.dto.ComparisonToggleResponse;
+import com.zeropick.backend.comparison.dto.ComparisonBoxToggleRequest;
+import com.zeropick.backend.comparison.dto.ComparisonBoxToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.service.ComparisonService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ public class ComparisonController {
     @PostMapping("/toggle")
     public ResponseEntity<Map<String, Object>> toggleComparisonBox(
             @RequestParam(defaultValue = "1") Long userId,
-            @RequestBody ComparisonToggleRequest request) {
+            @RequestBody ComparisonBoxToggleRequest request) {
         try {
-            ComparisonToggleResponse data = comparisonService.toggleComparisonBox(userId, request.getProductId());
+            ComparisonBoxToggleResponse data = comparisonService.toggleComparisonBox(userId, request.getProductId());
             return ResponseEntity.ok(Map.of(
                     "status", 200,
                     "message", "비교함 상태가 변경되었습니다.",
@@ -47,7 +47,7 @@ public class ComparisonController {
             @RequestParam(defaultValue = "1") Long userId,
             @PathVariable Long productId) {
         try {
-            ComparisonToggleResponse data = comparisonService.deleteComparisonBoxProduct(userId, productId);
+            ComparisonBoxToggleResponse data = comparisonService.deleteComparisonBoxProduct(userId, productId);
             return ResponseEntity.ok(Map.of(
                     "status", 200,
                     "message", "비교함에서 상품이 삭제되었습니다.",

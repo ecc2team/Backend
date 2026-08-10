@@ -1,6 +1,6 @@
 package com.zeropick.backend.comparison.service;
 
-import com.zeropick.backend.comparison.dto.ComparisonToggleResponse;
+import com.zeropick.backend.comparison.dto.ComparisonBoxToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.entity.ComparisonBox;
 import com.zeropick.backend.comparison.repository.ComparisonBoxRepository;
@@ -25,13 +25,13 @@ public class ComparisonService {
 
     // 1. 비교함 상품 토글 (담기 / 빼기)
     @Transactional
-    public ComparisonToggleResponse toggleComparisonBox(Long userId, Long productId) {
+    public ComparisonBoxToggleResponse toggleComparisonBox(Long userId, Long productId) {
         Optional<ComparisonBox> existingBox = comparisonBoxRepository.findByUserIdAndProductId(userId, productId);
 
         // 이미 담겨있다면 삭제 (isInComparisonBox: false)
         if (existingBox.isPresent()) {
             comparisonBoxRepository.delete(existingBox.get());
-            return new ComparisonToggleResponse(productId, false);
+            return new ComparisonBoxToggleResponse(productId, false);
         }
 
         // 담겨있지 않다면 카테고리 검증 후 새로 추가 (isInComparisonBox: true)
@@ -50,17 +50,17 @@ public class ComparisonService {
         }
 
         comparisonBoxRepository.save(new ComparisonBox(userId, productId));
-        return new ComparisonToggleResponse(productId, true);
+        return new ComparisonBoxToggleResponse(productId, true);
     }
 
     // 2. 비교함 상품 삭제
     @Transactional
-    public ComparisonToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
+    public ComparisonBoxToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
         ComparisonBox box = comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
                 .orElseThrow(() -> new IllegalArgumentException("NOT_FOUND_IN_COMPARISON_BOX"));
 
         comparisonBoxRepository.delete(box);
-        return new ComparisonToggleResponse(productId, false);
+        return new ComparisonBoxToggleResponse(productId, false);
     }
 
     // 3. 비교함 전체 목록 조회

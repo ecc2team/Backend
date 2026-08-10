@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,7 @@ public class ProductService {
             return new RecentProductsResponse.RecentProductItem(
                     rv.getProductId(),
                     productName,
-                    imageUrl,
+                    Collections.singletonList(imageUrl),
                     "ZERO_SUGAR", // 👈 List.of(...) 대신 "ZERO_SUGAR" 문자열로 변경
                     riskLevel
             );
