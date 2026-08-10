@@ -43,7 +43,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/emails/**",
-                                "/api/v1/auth/**"
+                                "/api/v1/auth/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
                         ).permitAll()   // 로그인/회원가입은 토큰 없이 허용
                         .anyRequest().authenticated()    // 나머지 요청은 인증 필수
                 )
@@ -58,7 +61,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "https://ecc-zeropick.netlify.app"
+                "https://ecc-zeropick.netlify.app",
+                "http://localhost:8080"
         ));
 
         configuration.setAllowedMethods(List.of(

@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EmailVerificationService {
 
     private static final long CODE_EXPIRATION_MINUTES = 5;
-    private static final long COOLDOWN_MINUTES = 3;
+    private static final long COOLDOWN_MINUTES = 1;
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final JavaMailSender mailSender;
