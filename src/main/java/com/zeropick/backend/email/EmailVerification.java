@@ -41,5 +41,25 @@ public class EmailVerification {
         return OffsetDateTime.now().isAfter(expiredAt);
     }
 
+    public boolean isCodeMatch(String inputCode) {
+        return this.code.equals(inputCode);
+    }
+
+    // expired_at으로 발송시각을 역산해서 쿨다운 여부 판단하기
+    public boolean isInCooldown(long codeExpirationMinutes, long cooldownMinutes) {
+        OffsetDateTime cooldownEnsAt = expiredAt.minusMinutes(codeExpirationMinutes - cooldownMinutes);
+        return OffsetDateTime.now().isBefore(cooldownEnsAt);
+    }
+    
+    public void renew(String newCode, OffsetDateTime newExpiredAt) {
+        this.code = newCode;
+        this.expiredAt = newExpiredAt;
+        this.verified = false;
+    }
+
+    public void markVerified() {
+        this.verified = true;
+    }
+
 
 }
