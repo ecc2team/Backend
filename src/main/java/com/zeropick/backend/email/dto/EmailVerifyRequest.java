@@ -1,10 +1,10 @@
-package com.zeropick.backend.auth.dto;
+package com.zeropick.backend.email.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequest(
+public record EmailVerifyRequest(
         @NotBlank @Email String email,
-        @NotBlank String password
+        @NotBlank String code
 ) {
 }
