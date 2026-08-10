@@ -15,9 +15,12 @@ public class Product {
     private Long id;
 
     private String name;
-    private String grade;
-    private String warningAdditive;
+    private Short grade;
+    private Boolean warningAdditive;
     private Integer calories;
     private BigDecimal sugar;
     private BigDecimal sodium;
+
+    @Column(name = "category_id")
+    private Long categoryId;
 }

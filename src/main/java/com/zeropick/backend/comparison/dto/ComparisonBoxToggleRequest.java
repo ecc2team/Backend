@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ComparisonToggleRequest {
+public class ComparisonBoxToggleRequest {
     private Long productId;
 }

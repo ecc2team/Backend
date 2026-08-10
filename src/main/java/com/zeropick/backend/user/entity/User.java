@@ -1,4 +1,4 @@
-package com.zeropick.backend.user;
+package com.zeropick.backend.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,6 +29,12 @@ public class User {
     @Column(length = 20)
     private AuthProvider provider;
 
+    @Column(nullable = false, length = 30)
+    private String nickname;
+
+    @Column(name= "refresh_token", length = 500)
+    private String refreshToken;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -36,10 +42,15 @@ public class User {
     private OffsetDateTime deletedAt;
 
     @Builder
-    public User(String email, String password, AuthProvider provider) {
+    public User(String email, String password, String nickname, AuthProvider provider) {
         this.email = email;
         this.password = password;
         this.provider = provider;
+        this.nickname = nickname;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public boolean isDeleted() {

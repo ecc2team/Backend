@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comparison_boxes")
+@Table(name = "comparison_box")
 @Getter
 @NoArgsConstructor
 public class ComparisonBox {
