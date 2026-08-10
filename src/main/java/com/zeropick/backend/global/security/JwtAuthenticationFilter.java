@@ -1,6 +1,6 @@
 package com.zeropick.backend.global.security;
 
-import com.zeropick.backend.user.UserRepository;
+import com.zeropick.backend.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
