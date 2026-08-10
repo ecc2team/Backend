@@ -1,5 +1,6 @@
 package com.zeropick.backend.comparison.service;
 
+import com.zeropick.backend.comparison.dto.ComparisonToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.entity.ComparisonBox;
 import com.zeropick.backend.comparison.repository.ComparisonBoxRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,15 +23,47 @@ public class ComparisonService {
     private final ComparisonBoxRepository comparisonBoxRepository;
     private final ProductRepository productRepository;
 
-    // 1. 비교함 상품 추가
+    // 1. 비교함 상품 토글 (담기 / 빼기)
     @Transactional
-    public void addComparisonBox(Long userId, Long productId) {
-        if (!comparisonBoxRepository.existsByUserIdAndProductId(userId, productId)) {
-            comparisonBoxRepository.save(new ComparisonBox(userId, productId));
+    public ComparisonToggleResponse toggleComparisonBox(Long userId, Long productId) {
+        Optional<ComparisonBox> existingBox = comparisonBoxRepository.findByUserIdAndProductId(userId, productId);
+
+        // 이미 담겨있다면 삭제 (isInComparisonBox: false)
+        if (existingBox.isPresent()) {
+            comparisonBoxRepository.delete(existingBox.get());
+            return new ComparisonToggleResponse(productId, false);
         }
+
+        // 담겨있지 않다면 카테고리 검증 후 새로 추가 (isInComparisonBox: true)
+        Product newProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+
+        List<ComparisonBox> userBoxes = comparisonBoxRepository.findByUserId(userId);
+        if (!userBoxes.isEmpty()) {
+            Long existingProductId = userBoxes.get(0).getProductId();
+            Product existingProduct = productRepository.findById(existingProductId).orElse(null);
+
+            // 다른 카테고리의 상품이 이미 들어있는 경우
+            if (existingProduct != null && !existingProduct.getCategoryId().equals(newProduct.getCategoryId())) {
+                throw new IllegalStateException("COMPARISON_CATEGORY_MISMATCH");
+            }
+        }
+
+        comparisonBoxRepository.save(new ComparisonBox(userId, productId));
+        return new ComparisonToggleResponse(productId, true);
     }
 
-    // 2. 비교함 목록 및 제품 비교 조회
+    // 2. 비교함 상품 삭제
+    @Transactional
+    public ComparisonToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
+        ComparisonBox box = comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new IllegalArgumentException("NOT_FOUND_IN_COMPARISON_BOX"));
+
+        comparisonBoxRepository.delete(box);
+        return new ComparisonToggleResponse(productId, false);
+    }
+
+    // 3. 비교함 전체 목록 조회
     public ProductCompareResponse getComparisonTable(Long userId) {
         List<ComparisonBox> boxes = comparisonBoxRepository.findByUserId(userId);
 
@@ -59,12 +93,5 @@ public class ComparisonService {
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         return new ProductCompareResponse(items.size(), items);
-    }
-
-    // 3. 비교함 상품 삭제
-    @Transactional
-    public void deleteComparisonBox(Long userId, Long productId) {
-        comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
-                .ifPresent(comparisonBoxRepository::delete);
     }
 }
