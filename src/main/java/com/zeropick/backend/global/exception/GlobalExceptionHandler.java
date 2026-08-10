@@ -2,6 +2,7 @@ package com.zeropick.backend.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,11 +27,11 @@ public class GlobalExceptionHandler {
     // @Valid 검증 실패 (필수값 누락, 형식 오류 등)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldError().stream()
-                .findFirst()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .orElse("요청 값이 올바르지 않습니다.");
+        FieldError error = e.getBindingResult().getFieldError();
+        String message = (error != null)
+                ? error.getField() + ": " + error.getDefaultMessage()
+                : "요청 값이 올바르지 않습니다.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(message));
-    }}
+    }
 }
