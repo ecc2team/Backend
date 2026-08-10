@@ -94,4 +94,9 @@ public class ProductService {
 
         return new RecentProductsResponse(items.size(), items);
     }
-}
+    // 3. 최근 본 상품 개별 삭제
+    @Transactional
+    public void deleteRecentProduct(Long userId, Long productId) {
+        recentViewRepository.findByUserIdAndProductId(userId, productId)
+                .ifPresent(recentViewRepository::delete);
+    }
