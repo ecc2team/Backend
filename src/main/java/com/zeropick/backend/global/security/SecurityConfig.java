@@ -62,7 +62,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "https://ecc-zeropick.netlify.app",
-                "http://localhost:8080"
+                "http://localhost:8080",
+                "http://localhost:5173"
         ));
 
         configuration.setAllowedMethods(List.of(
