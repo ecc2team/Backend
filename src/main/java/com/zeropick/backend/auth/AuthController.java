@@ -3,6 +3,7 @@ package com.zeropick.backend.auth;
 import com.zeropick.backend.auth.dto.LoginRequest;
 import com.zeropick.backend.auth.dto.SignupRequest;
 import com.zeropick.backend.auth.dto.TokenResponse;
+import com.zeropick.backend.global.response.ApiResponse;
 import com.zeropick.backend.global.security.JwtUtil;
 import com.zeropick.backend.user.AuthProvider;
 import com.zeropick.backend.user.User;
@@ -24,13 +25,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody @Valid SignupRequest request) {
+    public ResponseEntity<ApiResponse<Void>> signup(@RequestBody @Valid SignupRequest request) {
         authService.signup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("회원가입이 성공적으로 완료되었습니다.", null));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<ApiResponse<TokenResponse>> login(@RequestBody @Valid LoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success("로그인에 성공하였습니다.", authService.login(request)));
     }
 }
