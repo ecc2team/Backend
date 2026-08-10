@@ -37,4 +37,17 @@ public class ProductController {
                 "data", data
         ));
     }
-}
+    // 3. 최근 본 상품 개별 삭제 API (신규)
+    @DeleteMapping("/api/v1/users/me/recent-products/{productId}")
+    public ResponseEntity<Map<String, Object>> deleteRecentProduct(
+            @RequestParam(defaultValue = "1") Long userId,
+            @PathVariable Long productId) {
+        productService.deleteRecentProduct(userId, productId);
+
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("status", 200);
+        response.put("message", "최근 본 상품이 삭제되었습니다.");
+        response.put("data", null);
+
+        return ResponseEntity.ok(response);
+    }
