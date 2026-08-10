@@ -17,13 +17,13 @@ public class EmailController {
 
     private final EmailVerificationService emailVerificationService;
 
-    @PostMapping("/send")
+    @PostMapping("/send-code")
     public ResponseEntity<Void> sendCode(@RequestBody @Valid EmailSendRequest request) {
         emailVerificationService.sendCode(request.email());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/verify-code")
     public ResponseEntity<Void> verifyCode(@RequestBody @Valid EmailVerifyRequest request) {
         emailVerificationService.verifyCode(request.email(), request.code());
         return ResponseEntity.ok().build();
