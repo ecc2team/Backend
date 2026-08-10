@@ -29,6 +29,9 @@ public class User {
     @Column(length = 20)
     private AuthProvider provider;
 
+    @Column(name= "refresh_token", length = 500)
+    private String refreshToken;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -40,6 +43,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.provider = provider;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public boolean isDeleted() {

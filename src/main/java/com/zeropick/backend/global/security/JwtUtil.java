@@ -3,6 +3,7 @@ package com.zeropick.backend.global.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ public class JwtUtil {
 
     private final SecretKey key;
     private final long expirationMs;
+    private static final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 14;    // 14일
 
     // 1. 비밀키 준비: yml의 일반 문자열(secret) -> 자바 전용 SecretKey 객체로 변환
     public JwtUtil(
@@ -37,6 +39,15 @@ public class JwtUtil {
                 .expiration(expiry)     // 만료 시간
                 .signWith(key)          // 서버 비밀키로 Signature
                 .compact();             // 최종 "aaaaa.bbbbb.ccccc" 문자열 반환
+    }
+
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     // 3. 토큰 해독 및 검증 (parseClaims)
