@@ -1,41 +1,24 @@
 package com.zeropick.backend.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class ProductDetailResponse {
+public record ProductDetailResponse(
+        Long id,
+        String name,
+        Integer grade,
+        Boolean warningAdditive,
+        Nutrition nutrition,
+        IngredientsAnalysis analysis
+) {
+    // 중첩 record 생성
+    public record Nutrition(
+            Integer calories,
+            Integer sugar,
+            Integer sodium
+    ) {}
 
-    private Long productId;
-    private String productName;
-    private Integer grade;
-    private Boolean warningAdditive;
-    private Nutrition nutrition;
-    private IngredientsAnalysis ingredientsAnalysis;
-
-    @Getter
-    @AllArgsConstructor
-    public static class Nutrition {
-        private Integer calories;
-        private Integer sugar;
-        private Integer sodium;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class IngredientsAnalysis {
-        private List<IngredientInfo> sweeteners;
-        private List<IngredientInfo> additives;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class IngredientInfo {
-        private String name;
-        private String riskLevel;
-        private String summary;
-    }
+    public record IngredientsAnalysis(
+            List<String> cautionIngredients,
+            List<String> allergicIngredients
+    ) {}
 }
