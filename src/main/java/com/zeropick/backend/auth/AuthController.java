@@ -23,7 +23,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest request) {
         SignupResponse response = authService.signup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("회원가입이 성공적으로 완료되었습니다.", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("회원가입 및 맞춤 취향 설정이 성공적으로 완료되었습니다.", response));
     }
 
     @PostMapping("/login")
