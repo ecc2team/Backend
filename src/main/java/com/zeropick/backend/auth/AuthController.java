@@ -1,9 +1,6 @@
 package com.zeropick.backend.auth;
 
-import com.zeropick.backend.auth.dto.LoginRequest;
-import com.zeropick.backend.auth.dto.SignupRequest;
-import com.zeropick.backend.auth.dto.SignupResponse;
-import com.zeropick.backend.auth.dto.TokenResponse;
+import com.zeropick.backend.auth.dto.*;
 import com.zeropick.backend.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +26,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<TokenResponse>> login(@RequestBody @Valid LoginRequest request) {
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공하였습니다.", authService.login(request)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestBody @Valid LogoutRequest request) {
+        authService.logout(request);
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 로그아웃되었습니다.", null));
     }
 }

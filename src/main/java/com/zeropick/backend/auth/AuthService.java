@@ -1,9 +1,6 @@
 package com.zeropick.backend.auth;
 
-import com.zeropick.backend.auth.dto.LoginRequest;
-import com.zeropick.backend.auth.dto.SignupRequest;
-import com.zeropick.backend.auth.dto.SignupResponse;
-import com.zeropick.backend.auth.dto.TokenResponse;
+import com.zeropick.backend.auth.dto.*;
 import com.zeropick.backend.category.CategoryRepository;
 import com.zeropick.backend.email.EmailVerificationService;
 import com.zeropick.backend.global.security.JwtUtil;
@@ -96,5 +93,23 @@ public class AuthService {
         user.updateRefreshToken(refreshToken);
 
         return new TokenResponse(user.getId(), accessToken, refreshToken);
+    }
+
+    @Transactional
+    public void logout(LogoutRequest request) {
+        String refreshToken = request.refreshToken();
+
+        if (!jwtUtil.isValid(refreshToken)) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        String email = jwtUtil.extractEmail(refreshToken);
+        User user = userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다."));
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        user.updateRefreshToken(null);
     }
 }
