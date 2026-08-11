@@ -7,17 +7,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
     // 1. 제품 상세 및 성분 분석 조회 API
-    @GetMapping("/{productId}")
+    @GetMapping("/api/v1/products/{productId}")
     public ResponseEntity<Map<String, Object>> getProductDetail(@PathVariable Long productId) {
         ProductDetailResponse data = productService.getProductDetail(productId);
         return ResponseEntity.ok(Map.of(
@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     // 2. 최근 본 상품 목록 조회 API
-    @GetMapping("/recent")
+    @GetMapping("/api/v1/products/recent")
     public ResponseEntity<Map<String, Object>> getRecentProducts(@RequestParam Long userId) {
         RecentProductsResponse data = productService.getRecentProducts(userId);
         return ResponseEntity.ok(Map.of(
@@ -37,14 +37,15 @@ public class ProductController {
                 "data", data
         ));
     }
-    // 3. 최근 본 상품 개별 삭제 API (신규)
+
+    // 3. 최근 본 상품 개별 삭제 API
     @DeleteMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> deleteRecentProduct(
             @RequestParam(defaultValue = "1") Long userId,
             @PathVariable Long productId) {
         productService.deleteRecentProduct(userId, productId);
 
-        Map<String, Object> response = new java.util.HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "최근 본 상품이 삭제되었습니다.");
         response.put("data", null);
