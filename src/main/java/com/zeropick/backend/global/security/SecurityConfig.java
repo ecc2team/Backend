@@ -3,6 +3,7 @@ package com.zeropick.backend.global.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -48,8 +49,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
-                        ).permitAll()   // 로그인/회원가입은 토큰 없이 허용
-                        .anyRequest().authenticated()    // 나머지 요청은 인증 필수
+                        ).permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/recent").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 배치
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -63,6 +68,7 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "https://ecc-zeropick.netlify.app",
+                "https://ecc-zeropick.selee6047.workers.dev",
                 "http://localhost:8080",
                 "http://localhost:5173"
         ));
