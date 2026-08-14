@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -76,5 +77,13 @@ public class ProductService {
     public void deleteRecentProduct(Long userId, Long productId) {
         recentViewRepository.findByUserIdAndProductId(userId, productId)
                 .ifPresent(recentViewRepository::delete);
+    }
+
+    public List<ProductDetailResponse> searchProducts(String keyword) {
+        // DB에서 이름에 keyword가 포함된 상품들을 조회
+        return productRepository.findByNameContaining(keyword)
+                .stream()
+                .map(ProductDetailResponse::from) // 혹은 new ProductDetailResponse(...)
+                .toList();
     }
 }

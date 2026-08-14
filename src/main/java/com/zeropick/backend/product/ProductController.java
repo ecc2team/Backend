@@ -52,4 +52,14 @@ public class ProductController {
 
         return ResponseEntity.ok(response);
     }
+    // 4. 상품 검색 API (신규)
+    @GetMapping("/api/v1/products/search")
+    public ResponseEntity<Map<String, Object>> searchProducts(@RequestParam String keyword) {
+        Object data = productService.searchProducts(keyword);
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "상품 검색 결과 조회가 완료되었습니다.",
+                "data", data
+        ));
+    }
 }
