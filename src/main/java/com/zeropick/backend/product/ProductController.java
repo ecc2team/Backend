@@ -52,10 +52,13 @@ public class ProductController {
 
         return ResponseEntity.ok(response);
     }
-    // 4. 상품 검색 API (신규)
+
+    // 4. 상품 검색 API (수정 완료)
     @GetMapping("/api/v1/products/search")
-    public ResponseEntity<Map<String, Object>> searchProducts(@RequestParam String keyword) {
-        Object data = productService.searchProducts(keyword);
+    public ResponseEntity<Map<String, Object>> searchProducts(
+            @RequestParam(name = "query") String query // 기존 keyword에서 query로 변경
+    ) {
+        Object data = productService.searchProducts(query);
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "상품 검색 결과 조회가 완료되었습니다.",
