@@ -56,10 +56,9 @@ public class ComparisonService {
     // 2. 비교함 상품 삭제
     @Transactional
     public ComparisonBoxToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
-        ComparisonBox box = comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
-                .orElseThrow(() -> new IllegalArgumentException("NOT_FOUND_IN_COMPARISON_BOX"));
+        comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
+                .ifPresent(comparisonBoxRepository::delete);
 
-        comparisonBoxRepository.delete(box);
         return new ComparisonBoxToggleResponse(productId, false);
     }
 

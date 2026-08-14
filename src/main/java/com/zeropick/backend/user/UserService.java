@@ -43,4 +43,11 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(request.newPasssword()));
         emailVerificationService.invalidate(request.email());
     }
+
+    @Transactional
+    public void withdraw(Long userId) {
+        // 이미 탈퇴 처리된 경우 아무 것도 하지 않고 조용히 종료
+        userRepository.findByIdAndDeletedAtIsNull(userId)
+                .ifPresent(User::withdraw);
+    }
 }

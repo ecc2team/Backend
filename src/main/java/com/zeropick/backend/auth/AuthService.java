@@ -100,16 +100,36 @@ public class AuthService {
         String refreshToken = request.refreshToken();
 
         if (!jwtUtil.isValid(refreshToken)) {
+            return; // 무효한 토큰이므로 로그아웃 목적은 달성됨
+        }
+
+        String email = jwtUtil.extractEmail(refreshToken);
+        userRepository.findByEmailAndDeletedAtIsNull(email)
+                        .filter(user -> refreshToken.equals(user.getRefreshToken()))
+                                .ifPresent(user -> user.updateRefreshToken(null));
+    }
+
+    @Transactional
+    public TokenResponse reissue(ReissueRequest request) {
+        String refreshToken = request.refreshToken();
+
+        if (!jwtUtil.isValid(refreshToken)) {
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
         String email = jwtUtil.extractEmail(refreshToken);
+
         User user = userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다."));
+
         if (!refreshToken.equals(user.getRefreshToken())) {
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        user.updateRefreshToken(null);
+        String newAccessToken = jwtUtil.generateToken(user.getEmail());
+        String newRefreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        user.updateRefreshToken(newRefreshToken);
+
+        return new TokenResponse(user.getId(), newAccessToken, newRefreshToken);
     }
 }

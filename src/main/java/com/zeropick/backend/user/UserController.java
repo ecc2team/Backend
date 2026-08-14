@@ -5,9 +5,11 @@ import com.zeropick.backend.user.dto.EmailCheckResponse;
 import com.zeropick.backend.user.dto.FindAccountRequest;
 import com.zeropick.backend.user.dto.FindAccountResponse;
 import com.zeropick.backend.user.dto.ResetPasswordRequest;
+import com.zeropick.backend.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,5 +34,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody @Valid ResetPasswordRequest request){
         userService.resetPassword(request);
         return ResponseEntity.ok(ApiResponse.success("비밀번호 변경이 정상적으로 처리되었습니다.", null));
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> withdraw(@AuthenticationPrincipal User user) {
+        userService.withdraw(user.getId());
+        return ResponseEntity.ok(ApiResponse.success("회원 탈퇴가 정상적으로 처리되었습니다.", null));
     }
 }

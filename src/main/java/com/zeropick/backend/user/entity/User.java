@@ -58,4 +58,9 @@ public class User {
     public boolean isDeleted() {
         return deletedAt != null;
     }
+
+    public void withdraw() {
+        this.deletedAt = OffsetDateTime.now();
+        this.refreshToken = null; // 탈퇴 시 refreshToken 재발급 경로 막아둠
+    }
 }
