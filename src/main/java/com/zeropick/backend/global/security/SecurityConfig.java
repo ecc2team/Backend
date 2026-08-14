@@ -53,9 +53,12 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/products/recent").authenticated()
+                        .requestMatchers(
+                                "/api/v1/categories/**",
+                                "/api/v1/products/**",
+                                "/api/v1/ingredients/**"
+                        ).permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 배치
