@@ -53,4 +53,10 @@ public class IntakeService {
 
         return result;
     }
+
+    // 3. 섭취 기록 삭제 (새로 추가된 메서드!)
+    @Transactional
+    public void deleteIntakeRecord(Long intakeRecordId) {
+        intakeRecordRepository.deleteById(intakeRecordId);
+    }
 }
