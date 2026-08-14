@@ -33,4 +33,9 @@ public class AuthController {
         authService.logout(request);
         return ResponseEntity.ok(ApiResponse.success("성공적으로 로그아웃되었습니다.", null));
     }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<ApiResponse<TokenResponse>> reissue(@RequestBody @Valid ReissueRequest request) {
+        return ResponseEntity.ok(ApiResponse.success("토큰이 재발급되었습니다.", authService.reissue(request)));
+    }
 }
