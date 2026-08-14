@@ -25,14 +25,20 @@ public record ProductDetailResponse(
     ) {}
 
     // Product 엔티티를 ProductDetailResponse로 변환하는 정적 메서드
+    // Product 엔티티를 ProductDetailResponse로 변환하는 정적 메서드
+    // Product 엔티티를 ProductDetailResponse로 변환하는 정적 메서드
     public static ProductDetailResponse from(Product product) {
         return new ProductDetailResponse(
-                product.getId(),                             // 1. id
-                product.getName(),                           // 2. name
-                0,                                           // 3. grade (임시 기본값)
-                false,                                       // 4. warningAdditive (임시 기본값)
-                new Nutrition(0, 0, 0),                      // 5. nutrition (임시 기본 객체)
-                new IngredientsAnalysis(List.of(), List.of()) // 6. analysis (임시 기본 객체)
+                product.getId(),               // 1. id
+                product.getName(),             // 2. name
+                product.getGrade() != null ? product.getGrade().intValue() : 0,// 3. grade (실제 DB 등급 값)
+                product.getWarningAdditive(),  // 4. warningAdditive (실제 주의 성분 유무)
+                new Nutrition(
+                        product.getCalories() != null ? product.getCalories() : 0,
+                        product.getSugar() != null ? product.getSugar().intValue() : 0,   // 👈 .intValue() 추가!
+                        product.getSodium() != null ? product.getSodium().intValue() : 0  // 👈 .intValue() 추가!
+                ),
+                new IngredientsAnalysis(List.of(), List.of()) // 6. analysis (엔티티에 필드가 없으므로 기본값 유지)
         );
     }
 }
