@@ -58,6 +58,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(status.value(), e.getParameterName() + " 파라미터가 필요합니다."));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException e) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(status.value(), e.getMessage()));
+    }
+
     // 그 외 예상하지 못한 모든 예외
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
