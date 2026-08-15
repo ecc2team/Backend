@@ -40,10 +40,8 @@ public class AuthService {
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public SignupResponse signup(SignupRequest request) {
-        if (!emailVerificationService.isEmailVerified(request.email())) {
-            throw new IllegalStateException("이메일 인증이 필요합니다.");
-        }
+    public SignupResponse signup(SignupRequest request, String emailVerifySessionId) {
+        emailVerificationService.assertSessionVerified(emailVerifySessionId, request.email());
         if (userRepository.existsByEmailAndDeletedAtIsNull(request.email())) {
             throw new IllegalStateException("이미 가입된 이메일입니다.");
         }

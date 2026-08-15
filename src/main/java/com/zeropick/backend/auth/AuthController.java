@@ -18,9 +18,19 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest request) {
-        SignupResponse response = authService.signup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("회원가입 및 맞춤 취향 설정이 성공적으로 완료되었습니다.", response));
+    public ResponseEntity<ApiResponse<SignupResponse>> signup(
+            @RequestBody @Valid SignupRequest request,
+            @CookieValue(name = CookieUtil.EMAIL_VERIFY_SESSION_COOKIE, required = false) String emailVerifySessionId
+    ) {
+        SignupResponse response = authService.signup(request, emailVerifySessionId);
+
+        // 가입 성공 후 인증 세션은 재사용되면 안 되므로 쿠키를 지운다. (서버 쪽 레코드는 서비스에서 invalidate)
+        ResponseCookie clearedSessionCookie =
+                cookieUtil.delete(CookieUtil.EMAIL_VERIFY_SESSION_COOKIE, "/api/v1");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, clearedSessionCookie.toString())
+                .body(ApiResponse.created("회원가입 및 맞춤 취향 설정이 성공적으로 완료되었습니다.", response));
     }
 
     @PostMapping("/login")
