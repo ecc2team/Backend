@@ -19,7 +19,7 @@ public class EmailVerificationService {
     private static final long COOLDOWN_MINUTES = 1;
 
     private final EmailVerificationRepository emailVerificationRepository;
-    private final JavaMailSender mailSender;
+    private final EmailSender emailSender;
 
     @Transactional
     public void sendCode(String email) {
@@ -42,7 +42,7 @@ public class EmailVerificationService {
                                 .build()
                 )
         );
-        sendEmail(email, code);
+        emailSender.send(email, code);
     }
 
     @Transactional
@@ -75,15 +75,6 @@ public class EmailVerificationService {
     private String generateCode() {
         int code = ThreadLocalRandom.current().nextInt(0, 1_000_000);
         return String.format("%06d", code);
-    }
-
-    private void sendEmail(String to, String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("[ZeroPick] 이메일 인증코드");
-        message.setText("인증코드: " + code + "\n\n이 코드는 " + CODE_EXPIRATION_MINUTES + "분 동안 유효합니다.");
-        mailSender.send(message);
-        log.info("[인증코드 발송 완료] to={}", to);
     }
 
 }
