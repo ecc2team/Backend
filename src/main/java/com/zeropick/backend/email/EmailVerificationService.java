@@ -77,7 +77,7 @@ public class EmailVerificationService {
 
     private EmailVerification requireSession(String sessionId, String email) {
         if (!StringUtils.hasText(sessionId)) {
-            throw new IllegalArgumentException("인증 세션이 없습니다. 인증번호를 다시 요청해주세요.");
+            throw new IllegalStateException("인증 세션이 없습니다. 인증번호를 다시 요청해주세요.");
         }
         EmailVerification verification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("발송된 인증코드가 없습니다."));
