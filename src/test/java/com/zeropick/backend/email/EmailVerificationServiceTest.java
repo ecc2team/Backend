@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -24,7 +22,7 @@ import static org.mockito.Mockito.verify;
 class EmailVerificationServiceTest {
 
     @Mock private EmailVerificationRepository emailVerificationRepository;
-    @Mock private JavaMailSender mailSender;
+    @Mock private EmailSender emailSender;
 
     private EmailVerificationService emailVerificationService;
 
@@ -32,7 +30,7 @@ class EmailVerificationServiceTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
-        emailVerificationService = new EmailVerificationService(emailVerificationRepository, mailSender);
+        emailVerificationService = new EmailVerificationService(emailVerificationRepository, emailSender);
     }
 
     private EmailVerification verification(OffsetDateTime expiredAt) {
@@ -55,7 +53,7 @@ class EmailVerificationServiceTest {
             emailVerificationService.sendCode(EMAIL);
 
             verify(emailVerificationRepository).save(any(EmailVerification.class));
-            verify(mailSender).send(any(SimpleMailMessage.class));
+            verify(emailSender).send(anyString(), anyString());
         }
 
         @Test
@@ -68,7 +66,7 @@ class EmailVerificationServiceTest {
             assertThatThrownBy(() -> emailVerificationService.sendCode(EMAIL))
                     .isInstanceOf(IllegalStateException.class);
 
-            verify(mailSender, never()).send(any(SimpleMailMessage.class));
+            verify(emailSender, never()).send(anyString(), anyString());
         }
 
         @Test
@@ -82,7 +80,7 @@ class EmailVerificationServiceTest {
 
             assertThat(existing.getCode()).matches("\\d{6}");
             assertThat(existing.isVerified()).isFalse();
-            verify(mailSender).send(any(SimpleMailMessage.class));
+            verify(emailSender).send(anyString(), anyString());
         }
     }
 
