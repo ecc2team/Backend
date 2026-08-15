@@ -27,6 +27,7 @@ class EmailVerificationServiceTest {
     private EmailVerificationService emailVerificationService;
 
     private static final String EMAIL = "zerolover@naver.com";
+    private static final String SESSION_ID = "test-session-id";
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
@@ -38,6 +39,7 @@ class EmailVerificationServiceTest {
                 .email(EMAIL)
                 .code("123456")
                 .expiredAt(expiredAt)
+                .sessionId(SESSION_ID)
                 .build();
     }
 
@@ -46,12 +48,13 @@ class EmailVerificationServiceTest {
     class SendCode {
 
         @Test
-        @DisplayName("기존 발송 이력이 없으면 새로 저장하고 메일을 보낸다")
+        @DisplayName("기존 발송 이력이 없으면 새로 저장하고 메일을 보내고 세션 ID를 반환한다")
         void sendCode_creates_new_when_no_existing_record() {
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.empty());
 
-            emailVerificationService.sendCode(EMAIL);
+            String sessionId = emailVerificationService.sendCode(EMAIL);
 
+            assertThat(sessionId).isNotBlank();
             verify(emailVerificationRepository).save(any(EmailVerification.class));
             verify(emailSender).send(anyString(), anyString());
         }
@@ -70,16 +73,18 @@ class EmailVerificationServiceTest {
         }
 
         @Test
-        @DisplayName("쿨다운이 지났으면 기존 코드를 갱신하고 메일을 다시 보낸다")
+        @DisplayName("쿨다운이 지났으면 기존 코드/세션을 갱신하고 메일을 다시 보낸다")
         void sendCode_renews_when_cooldown_passed() {
             // 만료까지 3분 남음 = 발송된 지 2분 지남 = 쿨다운(1분) 지남
             EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(3));
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
 
-            emailVerificationService.sendCode(EMAIL);
+            String newSessionId = emailVerificationService.sendCode(EMAIL);
 
             assertThat(existing.getCode()).matches("\\d{6}");
             assertThat(existing.isVerified()).isFalse();
+            assertThat(existing.getSessionId()).isEqualTo(newSessionId);
+            assertThat(existing.getSessionId()).isNotEqualTo(SESSION_ID); // 이전 쿠키는 더 이상 유효하지 않음
             verify(emailSender).send(anyString(), anyString());
         }
     }
@@ -89,13 +94,32 @@ class EmailVerificationServiceTest {
     class VerifyCode {
 
         @Test
+        @DisplayName("세션 쿠키가 없으면 예외가 발생한다")
+        void verifyCode_fails_when_session_cookie_missing() {
+            assertThatThrownBy(() -> emailVerificationService.verifyCode(null, EMAIL, "123456"))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("인증 세션이 없습니다. 인증번호를 다시 요청해주세요.");
+        }
+
+        @Test
         @DisplayName("발송 이력이 없으면 예외가 발생한다")
         void verifyCode_fails_when_no_record() {
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> emailVerificationService.verifyCode(EMAIL, "123456"))
+            assertThatThrownBy(() -> emailVerificationService.verifyCode(SESSION_ID, EMAIL, "123456"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("발송된 인증코드가 없습니다.");
+        }
+
+        @Test
+        @DisplayName("쿠키의 세션 ID가 저장된 세션과 다르면 예외가 발생한다")
+        void verifyCode_fails_when_session_mismatch() {
+            EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
+            given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
+
+            assertThatThrownBy(() -> emailVerificationService.verifyCode("other-session", EMAIL, "123456"))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("인증 세션이 유효하지 않습니다. 인증번호를 다시 요청해주세요.");
         }
 
         @Test
@@ -104,7 +128,7 @@ class EmailVerificationServiceTest {
             EmailVerification existing = verification(OffsetDateTime.now().minusMinutes(1));
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
 
-            assertThatThrownBy(() -> emailVerificationService.verifyCode(EMAIL, "123456"))
+            assertThatThrownBy(() -> emailVerificationService.verifyCode(SESSION_ID, EMAIL, "123456"))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("인증코드가 만료되었습니다. 다시 발송해주세요.");
         }
@@ -115,43 +139,80 @@ class EmailVerificationServiceTest {
             EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
 
-            assertThatThrownBy(() -> emailVerificationService.verifyCode(EMAIL, "999999"))
+            assertThatThrownBy(() -> emailVerificationService.verifyCode(SESSION_ID, EMAIL, "999999"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("인증코드가 일치하지 않습니다.");
         }
 
         @Test
-        @DisplayName("코드가 일치하면 인증 성공 처리된다")
+        @DisplayName("세션과 코드가 모두 일치하면 인증 성공 처리된다")
         void verifyCode_succeeds() {
             EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
 
-            emailVerificationService.verifyCode(EMAIL, "123456");
+            emailVerificationService.verifyCode(SESSION_ID, EMAIL, "123456");
 
             assertThat(existing.isVerified()).isTrue();
         }
     }
 
     @Nested
-    @DisplayName("인증 여부 조회")
-    class IsEmailVerified {
+    @DisplayName("인증 세션 재검증 (회원가입/비밀번호 재설정 시점)")
+    class AssertSessionVerified {
 
         @Test
-        @DisplayName("발송 이력이 없으면 false를 반환한다")
-        void returns_false_when_no_record() {
+        @DisplayName("발송 이력이 없으면 예외가 발생한다")
+        void throws_when_no_record() {
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.empty());
 
-            assertThat(emailVerificationService.isEmailVerified(EMAIL)).isFalse();
+            assertThatThrownBy(() -> emailVerificationService.assertSessionVerified(SESSION_ID, EMAIL))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("이메일 인증이 필요합니다.");
         }
 
         @Test
-        @DisplayName("인증 완료 상태면 true를 반환한다")
-        void returns_true_when_verified() {
+        @DisplayName("세션 쿠키가 없으면 예외가 발생한다")
+        void throws_when_session_id_missing() {
             EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
             existing.markVerified();
             given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
 
-            assertThat(emailVerificationService.isEmailVerified(EMAIL)).isTrue();
+            assertThatThrownBy(() -> emailVerificationService.assertSessionVerified(null, EMAIL))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("이메일 인증이 필요합니다.");
+        }
+
+        @Test
+        @DisplayName("세션 ID가 일치하지 않으면 예외가 발생한다")
+        void throws_when_session_id_mismatch() {
+            EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
+            existing.markVerified();
+            given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
+
+            assertThatThrownBy(() -> emailVerificationService.assertSessionVerified("other-session", EMAIL))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("이메일 인증이 필요합니다.");
+        }
+
+        @Test
+        @DisplayName("인증 완료(verified) 상태가 아니면 예외가 발생한다")
+        void throws_when_not_verified() {
+            EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
+            given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
+
+            assertThatThrownBy(() -> emailVerificationService.assertSessionVerified(SESSION_ID, EMAIL))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("이메일 인증이 필요합니다.");
+        }
+
+        @Test
+        @DisplayName("세션이 일치하고 인증 완료 상태면 예외 없이 통과한다")
+        void passes_when_verified_and_session_matches() {
+            EmailVerification existing = verification(OffsetDateTime.now().plusMinutes(5));
+            existing.markVerified();
+            given(emailVerificationRepository.findByEmail(EMAIL)).willReturn(Optional.of(existing));
+
+            emailVerificationService.assertSessionVerified(SESSION_ID, EMAIL);
         }
     }
 }

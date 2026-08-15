@@ -34,7 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // REST API이므로 CSRF 비활성화
+                // REST API이므로 CSRF 필터는 비활성화. reissue/logout은 consumes=application/json
+                // CORS Origin 화이트리스트 조합으로 CSRF 방어함
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // CORS 설정

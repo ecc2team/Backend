@@ -29,12 +29,16 @@ public class EmailVerification {
     @Column(name="is_verified", nullable = false)
     private boolean verified;
 
+    @Column(name="session_id", nullable = false, length = 64, unique = true)
+    private String sessionId;
+
     @Builder
-    public EmailVerification(String email, String code, OffsetDateTime expiredAt) {
+    public EmailVerification(String email, String code, OffsetDateTime expiredAt, String sessionId) {
         this.email = email;
         this.code = code;
         this.expiredAt = expiredAt;
         this.verified = false;
+        this.sessionId = sessionId;
     }
 
     public boolean isExpired() {
@@ -51,10 +55,11 @@ public class EmailVerification {
         return OffsetDateTime.now().isBefore(cooldownEnsAt);
     }
     
-    public void renew(String newCode, OffsetDateTime newExpiredAt) {
+    public void renew(String newCode, OffsetDateTime newExpiredAt, String newSessionId) {
         this.code = newCode;
         this.expiredAt = newExpiredAt;
         this.verified = false;
+        this.sessionId = newSessionId;
     }
 
     public void markVerified() {

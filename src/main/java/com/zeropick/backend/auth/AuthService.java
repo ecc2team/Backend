@@ -3,11 +3,11 @@ package com.zeropick.backend.auth;
 import com.zeropick.backend.auth.dto.*;
 import com.zeropick.backend.category.CategoryRepository;
 import com.zeropick.backend.email.EmailVerificationService;
+import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.global.security.JwtUtil;
 import com.zeropick.backend.ingredient.entity.Ingredient;
 import com.zeropick.backend.ingredient.repository.IngredientRepository;
 import com.zeropick.backend.category.Category;
-import com.zeropick.backend.category.CategoryRepository;
 import com.zeropick.backend.user.*;
 import com.zeropick.backend.user.entity.User;
 import com.zeropick.backend.user.entity.UserAllergy;
@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -40,10 +41,8 @@ public class AuthService {
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public SignupResponse signup(SignupRequest request) {
-        if (!emailVerificationService.isEmailVerified(request.email())) {
-            throw new IllegalStateException("이메일 인증이 필요합니다.");
-        }
+    public SignupResponse signup(SignupRequest request, String emailVerifySessionId) {
+        emailVerificationService.assertSessionVerified(emailVerifySessionId, request.email());
         if (userRepository.existsByEmailAndDeletedAtIsNull(request.email())) {
             throw new IllegalStateException("이미 가입된 이메일입니다.");
         }
@@ -80,7 +79,7 @@ public class AuthService {
         ));
     }
 
-    public TokenResponse login(LoginRequest request) {
+    public TokenPair login(LoginRequest request) {
         User user = userRepository.findByEmailAndDeletedAtIsNull(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
@@ -92,15 +91,13 @@ public class AuthService {
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
         user.updateRefreshToken(refreshToken);
 
-        return new TokenResponse(user.getId(), accessToken, refreshToken);
+        return new TokenPair(user.getId(), accessToken, refreshToken);
     }
 
     @Transactional
-    public void logout(LogoutRequest request) {
-        String refreshToken = request.refreshToken();
-
-        if (!jwtUtil.isValid(refreshToken)) {
-            return; // 무효한 토큰이므로 로그아웃 목적은 달성됨
+    public void logout(String refreshToken) {
+        if (!StringUtils.hasText(refreshToken) || !jwtUtil.isValid(refreshToken)) {
+            return;
         }
 
         String email = jwtUtil.extractEmail(refreshToken);
@@ -110,26 +107,25 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse reissue(ReissueRequest request) {
-        String refreshToken = request.refreshToken();
+    public TokenPair reissue(String refreshToken) {
 
-        if (!jwtUtil.isValid(refreshToken)) {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        if (!StringUtils.hasText(refreshToken) || !jwtUtil.isValid(refreshToken)) {
+            throw new UnauthorizedException("리프레시 토큰이 유효하지 않습니다. 다시 로그인해주세요.");
         }
 
         String email = jwtUtil.extractEmail(refreshToken);
 
         User user = userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다."));
+                .orElseThrow(() -> new UnauthorizedException("리프레시 토큰이 유효하지 않습니다. 다시 로그인해주세요."));
 
         if (!refreshToken.equals(user.getRefreshToken())) {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+            throw new UnauthorizedException("리프레시 토큰이 유효하지 않습니다. 다시 로그인해주세요.");
         }
 
         String newAccessToken = jwtUtil.generateToken(user.getEmail());
         String newRefreshToken = jwtUtil.generateRefreshToken(user.getEmail());
         user.updateRefreshToken(newRefreshToken);
 
-        return new TokenResponse(user.getId(), newAccessToken, newRefreshToken);
+        return new TokenPair(user.getId(), newAccessToken, newRefreshToken);
     }
 }
