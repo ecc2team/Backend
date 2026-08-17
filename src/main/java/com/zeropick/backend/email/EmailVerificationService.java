@@ -44,6 +44,7 @@ public class EmailVerificationService {
                                 .build()
                 )
         );
+        log.info("[EmailVerificationService] Mailgun 발송 호출 직전. email={}", email);
         emailSender.send(email, code);
         return sessionId;
     }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,6 +33,7 @@ public class EmailSender {
 
     @Async
     public void send(String to, String code) {
+        log.info("[EmailSender] Mailgun 호출 준비. recipient={}, domain={}", to, mailgunDomain);
         try {
             String url = "https://api.mailgun.net/v3/" + mailgunDomain + "/messages";
 
@@ -49,11 +51,15 @@ public class EmailSender {
                     + CODE_EXPIRATION_MINUTES + "분 동안 유효합니다.</p>");
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-            restTemplate.postForEntity(url, request, String.class);
+
+            log.info("[EmailSender] Mailgun API 호출 시작. url={}", url);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            log.info("[EmailSender] Mailgun 응답 수신. status={}, body={}", response.getStatusCode(), response.getBody());
 
             log.info("[인증코드 발송 완료] to={}", to);
         } catch (Exception e) {
-            log.error("[인증코드 발송 실패] to={}, error={}", to, e.getMessage());
+            log.error("[인증코드 발송 실패] to={}, exceptionType={}, message={}",
+                    to, e.getClass().getSimpleName(), e.getMessage(), e);
         }
     }
 }
