@@ -166,4 +166,15 @@ public class AuthService {
                 : userInfo.email().split("@")[0];    // 닉네임 제공 미동의 시 이메일 아이디로 대체
         return raw.length() > 30 ? raw.substring(0, 30) : raw;
     }
+
+    @Transactional
+    public OnboardingResponse updateOnboarding(User user, OnboardingRequest request) {
+        userPreferredCategoryRepository.deleteAllByUser(user);
+        userPreferredIngredientRepository.deleteAllByUser(user);
+        userAllergyRepository.deleteAllByUser(user);
+
+        saveOnboarding(user, request);
+
+        return new OnboardingResponse(user.getId(), user.getNickname());
+    }
 }

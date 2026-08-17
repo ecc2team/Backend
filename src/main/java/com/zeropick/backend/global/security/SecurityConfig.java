@@ -43,6 +43,7 @@ public class SecurityConfig {
 
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))     // 세션 사용 안함
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/onboarding").authenticated()
                         .requestMatchers(
                                 "/api/v1/emails/**",
                                 "/api/v1/auth/**",
