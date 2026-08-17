@@ -22,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import com.zeropick.backend.auth.oauth.SocialOAuthClient;
+import com.zeropick.backend.auth.oauth.SocialUserInfo;
+import java.util.List;
 
 import java.util.List;
 
@@ -39,6 +42,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailVerificationService emailVerificationService;
+    private final List<SocialOAuthClient> socialOAuthClients;
 
     @Transactional
     public SignupResponse signup(SignupRequest request, String emailVerifySessionId) {
@@ -127,5 +131,41 @@ public class AuthService {
         user.updateRefreshToken(newRefreshToken);
 
         return new TokenPair(user.getId(), newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public SocialLoginResult socialLogin(AuthProvider provider, String authCode) {
+        SocialUserInfo userInfo = resolveClient(provider).getUserInfo(authCode);
+
+        var existingUser = userRepository.findByEmailAndDeletedAtIsNull(userInfo.email());
+        boolean isNewUser = existingUser.isEmpty();
+
+        User user = existingUser.orElseGet(() -> userRepository.save(
+                User.builder()
+                        .email(userInfo.email())
+                        .nickname(resolveNickname(userInfo))
+                        .provider(provider)
+                        .build()
+        ));
+
+        String accessToken = jwtUtil.generateToken(user.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        user.updateRefreshToken(refreshToken);
+
+        return new SocialLoginResult(user.getId(), isNewUser, accessToken, refreshToken);
+    }
+
+    private SocialOAuthClient resolveClient(AuthProvider provider) {
+        return socialOAuthClients.stream()
+                .filter(client -> client.provider() == provider)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지원되지 않는 소셜 로그인 플랫폼입니다."));
+    }
+
+    private String resolveNickname(SocialUserInfo userInfo) {
+        String raw = StringUtils.hasText(userInfo.nickname())
+                ? userInfo.nickname()
+                : userInfo.email().split("@")[0];    // 닉네임 제공 미동의 시 이메일 아이디로 대체
+        return raw.length() > 30 ? raw.substring(0, 30) : raw;
     }
 }

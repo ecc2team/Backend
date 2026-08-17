@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.zeropick.backend.user.AuthProvider;
 import java.time.Duration;
 
 @RestController
@@ -89,5 +89,26 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, rotatedRefreshTokenCookie.toString())
                 .body(ApiResponse.success("토큰이 재발급되었습니다.", tokenPair.toResponse()));
+    }
+
+    @PostMapping("/kakao")
+    public ResponseEntity<ApiResponse<SocialLoginResponse>> kakaoLogin(@RequestBody @Valid SocialLoginRequest request) {
+        return socialLogin(AuthProvider.KAKAO, request.authCode());
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<SocialLoginResponse>> googleLogin(@RequestBody @Valid SocialLoginRequest request) {
+        return socialLogin(AuthProvider.GOOGLE, request.authCode());
+    }
+
+    private ResponseEntity<ApiResponse<SocialLoginResponse>> socialLogin(AuthProvider provider, String authCode) {
+        SocialLoginResult result = authService.socialLogin(provider, authCode);
+
+        ResponseCookie refreshTokenCookie = cookieUtil.create(
+                CookieUtil.REFRESH_TOKEN_COOKIE, result.refreshToken(), "/api/v1/auth", REFRESH_TOKEN_COOKIE_MAX_AGE);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(ApiResponse.success("소셜 로그인에 성공하였습니다.", result.toResponse()));
     }
 }
