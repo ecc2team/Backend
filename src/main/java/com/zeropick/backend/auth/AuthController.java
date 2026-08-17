@@ -1,20 +1,19 @@
 package com.zeropick.backend.auth;
 
 import com.zeropick.backend.auth.dto.*;
+import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.global.response.ApiResponse;
 import com.zeropick.backend.global.security.CookieUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import com.zeropick.backend.user.entity.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 import com.zeropick.backend.user.AuthProvider;
 import java.time.Duration;
 
@@ -110,5 +109,15 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(ApiResponse.success("소셜 로그인에 성공하였습니다.", result.toResponse()));
+    }
+
+    @PostMapping("/onboarding")
+    public ResponseEntity<ApiResponse<OnboardingResponse>> onboarding(
+            @AuthenticationPrincipal User user,
+            @RequestBody @Valid OnboardingRequest request
+    ) {
+        OnboardingResponse response = authService.updateOnboarding(user, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("온보딩이 완료되었습니다.", response));
     }
 }
