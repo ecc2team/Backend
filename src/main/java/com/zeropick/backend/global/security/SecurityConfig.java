@@ -56,7 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/categories/**",
                                 "/api/v1/products/**",
-                                "/api/v1/ingredients/**"
+                                "/api/v1/ingredients/**",
+                                "/api/v1/comparison-box/**"
                         ).permitAll()
 
                         .anyRequest().authenticated()
