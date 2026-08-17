@@ -32,10 +32,8 @@ public class UserService {
     }
 
     @Transactional
-    public void resetPassword(ResetPasswordRequest request) {
-        if (!emailVerificationService.isEmailVerified(request.email())) {
-            throw new IllegalStateException("이메일 인증이 필요합니다.");
-        }
+    public void resetPassword(ResetPasswordRequest request, String emailVerifySessionId) {
+        emailVerificationService.assertSessionVerified(emailVerifySessionId, request.email());
 
         User user = userRepository.findByEmailAndDeletedAtIsNull(request.email())
                 .orElseThrow(() -> new IllegalStateException("소셜 로그인 계정은 비밀번호를 재설정할 수 없습니다."));
