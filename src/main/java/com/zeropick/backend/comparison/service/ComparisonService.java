@@ -6,6 +6,7 @@ import com.zeropick.backend.comparison.entity.ComparisonBox;
 import com.zeropick.backend.comparison.repository.ComparisonBoxRepository;
 import com.zeropick.backend.product.entity.Product;
 import com.zeropick.backend.product.repository.ProductRepository;
+import com.zeropick.backend.user.repository.UserRepository; // 👈 추가
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,16 @@ public class ComparisonService {
 
     private final ComparisonBoxRepository comparisonBoxRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository; // 👈 1. UserRepository 추가
 
     // 1. 비교함 상품 토글 (담기 / 빼기)
     @Transactional
     public ComparisonBoxToggleResponse toggleComparisonBox(Long userId, Long productId) {
+        // 유저 검증
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+
         Optional<ComparisonBox> existingBox = comparisonBoxRepository.findByUserIdAndProductId(userId, productId);
 
         // 이미 담겨있다면 삭제 (isInComparisonBox: false)
@@ -56,6 +63,10 @@ public class ComparisonService {
     // 2. 비교함 상품 삭제
     @Transactional
     public ComparisonBoxToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+
         comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
                 .ifPresent(comparisonBoxRepository::delete);
 
@@ -64,6 +75,11 @@ public class ComparisonService {
 
     // 3. 비교함 전체 목록 조회
     public ProductCompareResponse getComparisonTable(Long userId) {
+        // 👈 2. 존재하지 않는 유저 예외 처리
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+
         List<ComparisonBox> boxes = comparisonBoxRepository.findByUserId(userId);
 
         List<ProductCompareResponse.ComparisonItem> items = boxes.stream().map(box -> {
