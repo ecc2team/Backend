@@ -61,8 +61,6 @@ public class AuthService {
 
         saveOnboarding(user, request.onboarding());
 
-        emailVerificationService.invalidate(request.email());
-
         return new SignupResponse(user.getId(), user.getEmail(), user.getNickname());
     }
 
