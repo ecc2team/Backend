@@ -28,29 +28,10 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId));
 
-        ProductDetailResponse.Nutrition nutrition = new ProductDetailResponse.Nutrition(
-                product.getCalories(),
-                product.getSugar() != null ? product.getSugar().intValue() : 0,
-                product.getSodium() != null ? product.getSodium().intValue() : 0
-        );
-
-        ProductDetailResponse.IngredientsAnalysis analysis = new ProductDetailResponse.IngredientsAnalysis(
-                List.of(), List.of()
-        );
-
-        // DTO 생성자 타입(Integer, Boolean)에 맞게 설정
-        Integer grade = 1;
-        Boolean warningAdditive = false;
-
-        return new ProductDetailResponse(
-                product.getId(),
-                product.getName(),
-                grade,
-                warningAdditive,
-                nutrition,
-                analysis
-        );
+        // ✅ 수정한 부분: 수동 생성자 호출을 지우고 DTO의 from() 메서드를 반환합니다.
+        return ProductDetailResponse.from(product);
     }
+
     // 2. 최근 본 상품 목록 조회
     public RecentProductsResponse getRecentProducts(Long userId) {
         List<RecentView> recentViews = recentViewRepository.findByUserIdOrderByViewedAtDesc(userId);
@@ -65,13 +46,14 @@ public class ProductService {
                     rv.getProductId(),
                     productName,
                     Collections.singletonList(imageUrl),
-                    "ZERO_SUGAR", // 👈 List.of(...) 대신 "ZERO_SUGAR" 문자열로 변경
+                    "ZERO_SUGAR",
                     riskLevel
             );
         }).collect(Collectors.toList());
 
         return new RecentProductsResponse(items.size(), items);
     }
+
     // 3. 최근 본 상품 개별 삭제
     @Transactional
     public void deleteRecentProduct(Long userId, Long productId) {
@@ -79,11 +61,11 @@ public class ProductService {
                 .ifPresent(recentViewRepository::delete);
     }
 
+    // 4. 상품 검색
     public List<ProductDetailResponse> searchProducts(String keyword) {
-        // DB에서 이름에 keyword가 포함된 상품들을 조회
         return productRepository.findByNameContaining(keyword)
                 .stream()
-                .map(ProductDetailResponse::from) // 혹은 new ProductDetailResponse(...)
+                .map(ProductDetailResponse::from)
                 .toList();
     }
 }
