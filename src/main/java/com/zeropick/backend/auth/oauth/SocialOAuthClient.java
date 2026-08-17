@@ -1,4 +1,8 @@
 package com.zeropick.backend.auth.oauth;
 
-public class SocialOAuthClient {
+import com.zeropick.backend.user.AuthProvider;
+
+public interface SocialOAuthClient {
+    AuthProvider provider();
+    SocialUserInfo getUserInfo(String authCode);
 }
