@@ -25,8 +25,8 @@ public class EmailSender {
     private final String mailgunDomain;
     private final String mailgunApiKey;
 
-    public EmailSender(@Value("${mailgun.domain}") String mailgunDomain,
-                       @Value("${mailgun.api-key}") String mailgunApiKey) {
+    public EmailSender(@Value("${mailgun.domain:default-domain}") String mailgunDomain,
+                       @Value("${mailgun.api-key:default-key}") String mailgunApiKey) {
         this.mailgunDomain = mailgunDomain;
         this.mailgunApiKey = mailgunApiKey;
     }
