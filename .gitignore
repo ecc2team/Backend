@@ -38,5 +38,3 @@ out/
 
 # Environment variables
 .env
-.env
-!.env
