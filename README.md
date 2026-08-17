@@ -11,7 +11,7 @@
 
 | **김미리** (Backend Lead) | **김아인** | 
 | :---: | :---: | 
-| [<img src="https://avatars.githubusercontent.com/mirikim404?v=4" height=120 width=120><br/>@mirikim404](https://github.com/mirikim404) | [<img src="" height=120 width=120><br/>@GitHub아이디](https://github.com/) | [<img src="https://avatars.githubusercontent.com/clairekim0012-creator?v=4" height=120 width=120><br/>@clairekim0012-creator](https://github.com/clairekim0012-creator)|
+| [<img src="https://avatars.githubusercontent.com/mirikim404?v=4" height=120 width=120><br/>@mirikim404](https://github.com/mirikim404) | [<img src="https://avatars.githubusercontent.com/clairekim0012-creator?v=4" height=120 width=120><br/>@clairekim0012-creator](https://github.com/clairekim0012-creator)|
 
 </div>
 
