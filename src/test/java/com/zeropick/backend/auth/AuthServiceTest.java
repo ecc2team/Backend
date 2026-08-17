@@ -132,7 +132,7 @@ class AuthServiceTest {
             verify(userPreferredCategoryRepository, times(2)).save(any());
             verify(userPreferredIngredientRepository, times(1)).save(any());
             verify(userAllergyRepository, times(1)).save(any());
-            verify(emailVerificationService).invalidate(email);
+            verify(emailVerificationService, never()).invalidate(anyString());
         }
     }
 
