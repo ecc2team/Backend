@@ -1,5 +1,6 @@
 package com.zeropick.backend.intake.service;
 
+import com.zeropick.backend.intake.dto.IntakeItemDto;
 import com.zeropick.backend.intake.entity.IntakeRecord;
 import com.zeropick.backend.intake.repository.IntakeRecordRepository;
 import com.zeropick.backend.product.entity.Product;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class IntakeService {
     @Transactional
     public void addIntakeRecord(Long userId, Long productId) {
         if (productId == null) {
-            throw new IllegalArgumentException("기록할 상품 ID(productId)가 전달되지 않았증니다.");
+            throw new IllegalArgumentException("기록할 상품 ID(productId)가 전달되지 않았습니다.");
         }
 
         // DB에 존재하지 않는 상품 ID 요청 시 예외 처리
@@ -36,13 +38,14 @@ public class IntakeService {
         intakeRecordRepository.save(record);
     }
 
-    // 2. 오늘의 섭취량 조회 및 계산 (21번 API)
+    // 2. 오늘의 섭취량 및 목록 조회 (21번 API)
     public Map<String, Object> getTodayIntakeSummary(Long userId) {
         List<IntakeRecord> todayRecords = intakeRecordRepository.findByUserIdAndIntakeDate(userId, LocalDate.now());
 
         int totalCalories = 0;
         double totalSugar = 0.0;
         double totalSodium = 0.0;
+        List<IntakeItemDto> intakeList = new ArrayList<>();
 
         for (IntakeRecord record : todayRecords) {
             Product product = productRepository.findById(record.getProductId()).orElse(null);
@@ -50,6 +53,15 @@ public class IntakeService {
                 totalCalories += product.getCalories() != null ? product.getCalories() : 0;
                 totalSugar += product.getSugar() != null ? product.getSugar().doubleValue() : 0.0;
                 totalSodium += product.getSodium() != null ? product.getSodium().doubleValue() : 0.0;
+
+                // 오늘 먹은 제품 정보 목록 추가 (28번 삭제 API에 쓸 record.getId() 포함)
+                intakeList.add(new IntakeItemDto(
+                        record.getId(),
+                        product.getId(),
+                        product.getName(),
+                        null,
+                        record.getIntakeDate() != null ? record.getIntakeDate().atStartOfDay() : null
+                ));
             }
         }
 
@@ -58,6 +70,7 @@ public class IntakeService {
         result.put("totalCalories", totalCalories);
         result.put("totalSugar", totalSugar);
         result.put("totalSodium", totalSodium);
+        result.put("intakeList", intakeList); // ★ 오늘 섭취한 제품 목록 반환 추가
 
         return result;
     }
