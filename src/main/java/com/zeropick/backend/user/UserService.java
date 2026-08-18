@@ -28,7 +28,7 @@ public class UserService {
     public FindAccountResponse findAccount(String email) {
         User user= userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
-        return new FindAccountResponse(user.getEmail(), user.getProvider());
+        return new FindAccountResponse(user.getId(), user.getEmail(), user.getProvider());
     }
 
     @Transactional
