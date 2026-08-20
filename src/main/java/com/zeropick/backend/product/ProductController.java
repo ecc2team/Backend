@@ -5,6 +5,7 @@ import com.zeropick.backend.product.dto.RecentProductsResponse;
 import com.zeropick.backend.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,6 +16,18 @@ import java.util.Map;
 public class ProductController {
 
     private final ProductService productService;
+
+    // 인증 토큰에서 userId 추출하는 헬퍼 메서드
+    private Long extractUserId(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalArgumentException("인증 정보가 존재하지 않습니다.");
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Long) {
+            return (Long) principal;
+        }
+        return Long.parseLong(principal.toString());
+    }
 
     // 1. 제품 상세 및 성분 분석 조회 API
     @GetMapping("/api/v1/products/{productId}")
@@ -27,9 +40,10 @@ public class ProductController {
         ));
     }
 
-    // 2. 최근 본 상품 목록 조회 API
-    @GetMapping("/api/v1/products/recent")
-    public ResponseEntity<Map<String, Object>> getRecentProducts(@RequestParam Long userId) {
+    // 2. 최근 본 상품 목록 조회 API (URL 수정 및 토큰 userId 적용)
+    @GetMapping("/api/v1/users/me/recent-products")
+    public ResponseEntity<Map<String, Object>> getRecentProducts(Authentication authentication) {
+        Long userId = extractUserId(authentication);
         RecentProductsResponse data = productService.getRecentProducts(userId);
         return ResponseEntity.ok(Map.of(
                 "status", 200,
@@ -38,11 +52,12 @@ public class ProductController {
         ));
     }
 
-    // 3. 최근 본 상품 개별 삭제 API
+    // 3. 최근 본 상품 개별 삭제 API (토큰 userId 적용)
     @DeleteMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> deleteRecentProduct(
-            @RequestParam(defaultValue = "1") Long userId,
+            Authentication authentication,
             @PathVariable Long productId) {
+        Long userId = extractUserId(authentication);
         productService.deleteRecentProduct(userId, productId);
 
         Map<String, Object> response = new HashMap<>();
@@ -53,10 +68,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    // 4. 상품 검색 API (수정 완료)
+    // 4. 상품 검색 API
     @GetMapping("/api/v1/products/search")
     public ResponseEntity<Map<String, Object>> searchProducts(
-            @RequestParam(name = "query") String query // 기존 keyword에서 query로 변경
+            @RequestParam(name = "query") String query
     ) {
         Object data = productService.searchProducts(query);
         return ResponseEntity.ok(Map.of(
