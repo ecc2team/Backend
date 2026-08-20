@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "intake_record")
@@ -24,15 +26,19 @@ public class IntakeRecord {
     private Long productId;
 
     @Column(name = "intake_date", nullable = false)
-    private LocalDate intakeDate;
+    private OffsetDateTime intakeAt;
+
+    @Column(nullable = false, precision = 3, scale = 1)
+    private BigDecimal quantity;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
-    public IntakeRecord(Long userId, Long productId, LocalDate intakeDate) {
+    public IntakeRecord(Long userId, Long productId, OffsetDateTime intakeDate, BigDecimal quantity) {
         this.userId = userId;
         this.productId = productId;
-        this.intakeDate = intakeDate;
-        this.createdAt = LocalDateTime.now();
+        this.intakeAt = intakeDate;
+        this.quantity = quantity != null ? quantity : BigDecimal.valueOf(1.0);
+        this.createdAt = OffsetDateTime.now();
     }
 }
