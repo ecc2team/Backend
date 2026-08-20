@@ -31,22 +31,27 @@ public class IntakeService {
     private final UserRepository userRepository;
     private final NutritionCalculator nutritionCalculator;
 
-    // 1. 섭취 기록 추가
+    // 1. 오늘 먹은 제품 기록 추가 (20번 API)
     @Transactional
     public void addIntakeRecord(Long userId, Long productId, BigDecimal quantity) {
-        // 제품 존재 여부 검증 로직 추가
-        if (!productRepository.existsById(productId)) {
-            throw new IllegalArgumentException("존재하지 않는 제품입니다.");
+        // null 체크
+        if (productId == null) {
+            throw new IllegalArgumentException("기록할 상품 ID(productId)가 전달되지 않았습니다.");
         }
 
+        // 제품 존재 여부 검증
+        if (!productRepository.existsById(productId)) {
+            throw new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId);
+        }
+
+        // 수량(quantity) 적용 및 저장
         BigDecimal actualQuantity = (quantity != null) ? quantity : BigDecimal.valueOf(1.0);
         IntakeRecord record = new IntakeRecord(userId, productId, OffsetDateTime.now(), actualQuantity);
         intakeRecordRepository.save(record);
     }
 
-    // 2. 오늘의 섭취량 조회 및 계산
+    // 2. 오늘의 섭취량 및 목록 조회 (21번 API)
     public TodayIntakeSummaryResponse getTodayIntakeSummary(Long userId) {
-
         // 1) 유저 정보 조회 및 개인화된 목표 칼로리/영양소 계산
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -59,7 +64,7 @@ public class IntakeService {
         OffsetDateTime startOfDay = today.atStartOfDay(zoneId).toOffsetDateTime();
         OffsetDateTime endOfDay = today.atTime(LocalTime.MAX).atZone(zoneId).toOffsetDateTime();
 
-        // 3) 오늘의 섭취 기록 조회
+        // 3) 오늘의 섭취 기록 조회 (질문자님 로직 유지)
         List<IntakeRecord> todayRecords = intakeRecordRepository.findByUserIdAndIntakeAtBetween(userId, startOfDay, endOfDay);
 
         // 4) 합계 계산용 변수 초기화
@@ -76,7 +81,8 @@ public class IntakeService {
         for (IntakeRecord record : todayRecords) {
             Product product = productRepository.findById(record.getProductId()).orElse(null);
             if (product != null) {
-                double qty = record.getQuantity().doubleValue();
+                // NPE 방어를 위해 수량 확인
+                double qty = record.getQuantity() != null ? record.getQuantity().doubleValue() : 1.0;
 
                 int itemCalories = (int) Math.round((product.getCalories() != null ? product.getCalories() : 0) * qty);
                 totalCalories += itemCalories;
@@ -90,9 +96,9 @@ public class IntakeService {
                 // 개별 섭취 기록 DTO(Record) 조립
                 TodayIntakeSummaryResponse.IntakeDetail detail = TodayIntakeSummaryResponse.IntakeDetail.builder()
                         .intakeRecordId(record.getId())
-                        .intakeTime(record.getIntakeAt().format(DateTimeFormatter.ofPattern("HH:mm")))
+                        .intakeTime(record.getIntakeAt() != null ? record.getIntakeAt().format(DateTimeFormatter.ofPattern("HH:mm")) : null)
                         .productName(product.getName())
-                        .servingSize("1개") // TODO: 제공 단위가 있다면 수정
+                        .servingSize("1개")
                         .calories(itemCalories)
                         .build();
 
@@ -100,10 +106,17 @@ public class IntakeService {
             }
         }
 
-        // 6) 달성률 및 상태 메시지 계산 (Target 기준 방어 로직 적용)
+        // 6) 달성률 및 상태 메시지 계산
         int targetCals = target.targetCalories() > 0 ? target.targetCalories() : 2000;
         int calorieGaugePercentage = (int) Math.round(((double) totalCalories / targetCals) * 100);
         String statusMessage = calorieGaugePercentage <= 100 ? "아직 여유가 있어요!" : "권장 칼로리를 초과했어요!";
+
+        // 안전한 나눗셈을 위한 목표치 세팅 (0으로 나누는 것 방지)
+        double tSugar = target.targetSugar() > 0 ? target.targetSugar() : 1;
+        double tSodium = target.targetSodium() > 0 ? target.targetSodium() : 1;
+        double tSatFat = target.targetSaturatedFat() > 0 ? target.targetSaturatedFat() : 1;
+        double tProtein = target.targetProtein() > 0 ? target.targetProtein() : 1;
+        double tCarbo = target.targetCarbohydrate() > 0 ? target.targetCarbohydrate() : 1;
 
         // 7) 최종 반환용 Record 조립
         TodayIntakeSummaryResponse.Summary summary = TodayIntakeSummaryResponse.Summary.builder()
@@ -114,11 +127,11 @@ public class IntakeService {
                 .build();
 
         TodayIntakeSummaryResponse.Nutrients nutrients = TodayIntakeSummaryResponse.Nutrients.builder()
-                .sugarPercentage((int) Math.round((totalSugar / target.targetSugar()) * 100))
-                .sodiumPercentage((int) Math.round((totalSodium / target.targetSodium()) * 100))
-                .saturatedFatPercentage((int) Math.round((totalSaturatedFat / target.targetSaturatedFat()) * 100))
-                .proteinPercentage((int) Math.round((totalProtein / target.targetProtein()) * 100))
-                .carbohydratePercentage((int) Math.round((totalCarbohydrate / target.targetCarbohydrate()) * 100))
+                .sugarPercentage((int) Math.round((totalSugar / tSugar) * 100))
+                .sodiumPercentage((int) Math.round((totalSodium / tSodium) * 100))
+                .saturatedFatPercentage((int) Math.round((totalSaturatedFat / tSatFat) * 100))
+                .proteinPercentage((int) Math.round((totalProtein / tProtein) * 100))
+                .carbohydratePercentage((int) Math.round((totalCarbohydrate / tCarbo) * 100))
                 .build();
 
         return TodayIntakeSummaryResponse.builder()
@@ -129,9 +142,13 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제
+    // 3. 섭취 기록 삭제 (28번 API)
     @Transactional
     public void deleteIntakeRecord(Long intakeRecordId) {
+        // 삭제 전 존재 여부 검증
+        if (!intakeRecordRepository.existsById(intakeRecordId)) {
+            throw new IllegalArgumentException("존재하지 않는 섭취 기록입니다. id=" + intakeRecordId);
+        }
         intakeRecordRepository.deleteById(intakeRecordId);
     }
 }

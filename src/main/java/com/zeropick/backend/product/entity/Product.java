@@ -1,5 +1,6 @@
 package com.zeropick.backend.product.entity;
 
+import com.zeropick.backend.ingredient.entity.ProductIngredient;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -42,7 +45,7 @@ public class Product {
     private String summary;
 
     @Column(name = "warning_additive", nullable = false)
-    private Boolean warningAdditive;
+    private Boolean warningAdditive = false;
 
     @Column(nullable = false)
     private Integer calories;
@@ -63,11 +66,16 @@ public class Product {
     private BigDecimal carbohydrate;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
+    private Integer viewCount = 0;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    // Product(1) : ProductIngredient(N) 연관관계 매핑
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductIngredient> productIngredients = new ArrayList<>();
+
+    // 소프트 삭제 여부 확인 도메인 메서드
     public boolean isDeleted() {
         return deletedAt != null;
     }

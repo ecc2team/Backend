@@ -2,10 +2,7 @@ package com.zeropick.backend.user;
 
 import com.zeropick.backend.global.response.ApiResponse;
 import com.zeropick.backend.global.security.CookieUtil;
-import com.zeropick.backend.user.dto.EmailCheckResponse;
-import com.zeropick.backend.user.dto.FindAccountRequest;
-import com.zeropick.backend.user.dto.FindAccountResponse;
-import com.zeropick.backend.user.dto.ResetPasswordRequest;
+import com.zeropick.backend.user.dto.*;
 import com.zeropick.backend.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +48,20 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> withdraw(@AuthenticationPrincipal User user) {
         userService.withdraw(user.getId());
         return ResponseEntity.ok(ApiResponse.success("회원 탈퇴가 정상적으로 처리되었습니다.", null));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getMyProfile(@AuthenticationPrincipal User user) {
+        UserProfileResponse response = userService.getMyProfile(user);
+        return ResponseEntity.ok(ApiResponse.success("프로필 조회가 성공적으로 완료되었습니다.", response));
+    }
+
+    @PutMapping("/me/preferences")
+    public ResponseEntity<ApiResponse<UserPreferencesResponse>> updatePreferences(
+            @AuthenticationPrincipal User user,
+            @RequestBody @Valid UserPreferencesRequest request
+    ) {
+        UserPreferencesResponse response = userService.updatePreferences(user, request);
+        return ResponseEntity.ok(ApiResponse.success("취향 설정이 성공적으로 업데이트되었습니다.", response));
     }
 }
