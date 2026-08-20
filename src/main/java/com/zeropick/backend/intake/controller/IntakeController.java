@@ -1,26 +1,29 @@
 package com.zeropick.backend.intake.controller;
 
+import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/intakes") // 👈 1. intake-records -> intakes 로 변경!
+@RequestMapping("/api/v1/intakes")
 @RequiredArgsConstructor
 public class IntakeController {
 
     private final IntakeService intakeService;
 
-    // 1. 섭취 기록 추가 API
+    // 1. 오늘 먹은 제품 기록하기 API
     @PostMapping
     public ResponseEntity<Map<String, Object>> addIntakeRecord(
             @RequestParam Long userId,
-            @RequestParam Long productId
+            @RequestParam Long productId,
+            @RequestParam(required = false) BigDecimal quantity
     ) {
-        intakeService.addIntakeRecord(userId, productId);
+        intakeService.addIntakeRecord(userId, productId, quantity);
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "섭취 기록이 성공적으로 추가되었습니다."
@@ -32,7 +35,7 @@ public class IntakeController {
     public ResponseEntity<Map<String, Object>> getTodayIntakeSummary(
             @RequestParam Long userId
     ) {
-        Map<String, Object> data = intakeService.getTodayIntakeSummary(userId);
+        TodayIntakeSummaryResponse data = intakeService.getTodayIntakeSummary(userId);
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "오늘의 섭취량 조회가 완료되었습니다.",
@@ -40,7 +43,7 @@ public class IntakeController {
         ));
     }
 
-    // 3. 섭취 기록 삭제 API (명세서 규격 반영 추가!)
+    // 3. 섭취 기록 삭제 API
     @DeleteMapping("/{intakeRecordId}")
     public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
             @PathVariable Long intakeRecordId
