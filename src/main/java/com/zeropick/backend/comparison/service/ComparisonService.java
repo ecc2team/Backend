@@ -32,20 +32,17 @@ public class ComparisonService {
     // 1. 비교함 상품 토글 (담기 / 빼기)
     @Transactional
     public ComparisonBoxToggleResponse toggleComparisonBox(Long userId, Long productId) {
-        // 유저 검증
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("존재하지 않는 유저입니다.");
         }
 
         Optional<ComparisonBox> existingBox = comparisonBoxRepository.findByUserIdAndProductId(userId, productId);
 
-        // 이미 담겨있다면 삭제 (isInComparisonBox: false)
         if (existingBox.isPresent()) {
             comparisonBoxRepository.delete(existingBox.get());
             return new ComparisonBoxToggleResponse(productId, false);
         }
 
-        // 담겨있지 않다면 카테고리 검증 후 새로 추가 (isInComparisonBox: true)
         Product newProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
@@ -54,7 +51,6 @@ public class ComparisonService {
             Long existingProductId = userBoxes.get(0).getProductId();
             Product existingProduct = productRepository.findById(existingProductId).orElse(null);
 
-            // 다른 카테고리의 상품이 이미 들어있는 경우 (커스텀 예외 던짐 -> 400 COMPARISON_CATEGORY_MISMATCH 반환)
             if (existingProduct != null && !existingProduct.getCategoryId().equals(newProduct.getCategoryId())) {
                 throw new ComparisonCategoryMismatchException();
             }
@@ -64,18 +60,16 @@ public class ComparisonService {
         return new ComparisonBoxToggleResponse(productId, true);
     }
 
-    // 2. 비교함 상품 삭제
+    // 2. 비교함 상품 삭제 (26번 API - 이미 존재하지 않는 경우에도 200 반환하도록 먹등 처리)
     @Transactional
     public ComparisonBoxToggleResponse deleteComparisonBoxProduct(Long userId, Long productId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("존재하지 않는 유저입니다.");
         }
 
-        // 비교함에 존재하지 않는 경우 IllegalArgumentException 던짐 (400 반환)
-        ComparisonBox box = comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
-                .orElseThrow(() -> new IllegalArgumentException("비교함에 해당 상품이 존재하지 않습니다."));
-
-        comparisonBoxRepository.delete(box);
+        // 비교함에 존재하는 경우 삭제 진행 (없어도 에러를 던지지 않고 200 응답 유지)
+        comparisonBoxRepository.findByUserIdAndProductId(userId, productId)
+                .ifPresent(comparisonBoxRepository::delete);
 
         return new ComparisonBoxToggleResponse(productId, false);
     }
@@ -92,10 +86,8 @@ public class ComparisonService {
             Product product = productRepository.findById(box.getProductId()).orElse(null);
             if (product == null) return null;
 
-            // Product 엔티티의 점수(score) 매핑 (null 안전 처리)
             Integer score = (product.getScore() != null) ? product.getScore().intValue() : 0;
 
-            // ComparisonBox의 생성 시간(createdAt)을 OffsetDateTime(UTC)으로 변환
             OffsetDateTime addedAt = (box.getCreatedAt() != null)
                     ? box.getCreatedAt().atOffset(ZoneOffset.UTC)
                     : null;
@@ -104,7 +96,7 @@ public class ComparisonService {
                     .productId(product.getId())
                     .productName(product.getName())
                     .imageUrl(product.getImageUrl())
-                    .dietaryTags(Collections.emptyList()) // 추후 Product-Tag 연관관계 엔티티 연결
+                    .dietaryTags(Collections.emptyList())
                     .score(score)
                     .addedAt(addedAt)
                     .build();
