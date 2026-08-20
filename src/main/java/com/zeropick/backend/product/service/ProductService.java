@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,12 +23,14 @@ public class ProductService {
     private final RecentViewRepository recentViewRepository;
 
     // 1. 제품 상세 및 성분 분석 조회
-    @Transactional // 👈 조회수 증가(DB 저장)를 위해 추가
+    @Transactional
     public ProductDetailResponse getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId));
 
-        // DTO의 from() 메서드를 호출하면 수정한 score, viewCount, summary, image가 자동으로 매핑됩니다.
+        // 조회수 1 증가 (Dirty Checking으로 DB 자동 업데이트)
+        product.setViewCount((product.getViewCount() != null ? product.getViewCount() : 0) + 1);
+
         return ProductDetailResponse.from(product);
     }
 
@@ -40,15 +41,20 @@ public class ProductService {
         List<RecentProductsResponse.RecentProductItem> items = recentViews.stream().map(rv -> {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
-            String imageUrl = "";
-            String riskLevel = "LOW";
+            String imageUrl = (product != null && product.getImageUrl() != null) ? product.getImageUrl() : "";
+            Integer score = (product != null && product.getScore() != null) ? product.getScore().intValue() : 0;
+
+            // LocalDateTime을 OffsetDateTime으로 변환 처리
+            java.time.OffsetDateTime viewedAt = (rv.getViewedAt() != null)
+                    ? rv.getViewedAt().atOffset(java.time.ZoneOffset.UTC)
+                    : null;
 
             return new RecentProductsResponse.RecentProductItem(
                     rv.getProductId(),
                     productName,
                     Collections.singletonList(imageUrl),
-                    "ZERO_SUGAR",
-                    riskLevel
+                    score,
+                    viewedAt
             );
         }).collect(Collectors.toList());
 

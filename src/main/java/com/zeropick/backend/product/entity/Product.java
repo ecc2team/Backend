@@ -1,14 +1,20 @@
 package com.zeropick.backend.product.entity;
 
+import com.zeropick.backend.ingredient.entity.ProductIngredient;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Product {
 
@@ -19,18 +25,18 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    // score(점수)
+    // 1. grade 삭제 후 score(점수) 단일 선언
     private Short score;
 
-    // view_count(조회수)
-    @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
+    // 2. view_count(조회수) 단일 선언
+    @Column(name = "view_count")
+    private Integer viewCount = 0;
 
-    // summary(한줄평)
+    // 3. summary(한줄평) 단일 선언
     @Column(columnDefinition = "TEXT")
     private String summary;
 
-    // image_url(이미지 URL)
+    // 4. image_url(이미지 URL)
     @Column(name = "image_url")
     private String imageUrl;
 
@@ -50,4 +56,7 @@ public class Product {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    // 5. ProductDetailResponse의 getProductIngredients() 에러 해결을 위한 연관관계 추가
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductIngredient> productIngredients = new ArrayList<>();
 }

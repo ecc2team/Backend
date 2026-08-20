@@ -1,24 +1,17 @@
 package com.zeropick.backend.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
+import java.time.OffsetDateTime;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class RecentProductsResponse {
-
-    private Integer totalElements;
-    private List<RecentProductItem> content;
-
-    @Getter
-    @AllArgsConstructor
-    public static class RecentProductItem {
-        private Long productId;
-        private String productName;
-        private List<String> dietaryTags;
-        private String riskLevel;
-        private String viewedAt;
-    }
+public record RecentProductsResponse(
+        Integer count,
+        List<RecentProductItem> items
+) {
+    public record RecentProductItem(
+            Long productId,
+            String productName,
+            List<String> images,
+            Integer score,           // riskLevel 제거 후 score 반영
+            OffsetDateTime viewedAt  // OffsetDateTime 반영
+    ) {}
 }
