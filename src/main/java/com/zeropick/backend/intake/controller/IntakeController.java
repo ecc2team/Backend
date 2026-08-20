@@ -1,5 +1,6 @@
 package com.zeropick.backend.intake.controller;
 
+import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
 import com.zeropick.backend.user.entity.User; 
