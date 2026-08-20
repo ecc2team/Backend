@@ -24,10 +24,12 @@ public class ProductService {
     private final RecentViewRepository recentViewRepository;
 
     // 1. 제품 상세 및 성분 분석 조회
+    @Transactional
     public ProductDetailResponse getProductDetail(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId));
 
+        productRepository.incrementViewCount(productId);
         // ✅ 수정한 부분: 수동 생성자 호출을 지우고 DTO의 from() 메서드를 반환합니다.
         return ProductDetailResponse.from(product);
     }
