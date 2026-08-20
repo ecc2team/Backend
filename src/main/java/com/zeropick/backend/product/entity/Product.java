@@ -32,8 +32,6 @@ public class Product {
 
     private Short score;
 
-    @Column(name = "view_count")
-    private Integer viewCount = 0;
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
@@ -42,8 +40,6 @@ public class Product {
 
     @Column(nullable = false)
     private Short grade;
-
-    private Short score;
 
     @Column(columnDefinition = "TEXT")
     private String summary;
@@ -75,15 +71,14 @@ public class Product {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    // Product(1) : ProductIngredient(N) 연관관계 매핑
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductIngredient> productIngredients = new ArrayList<>();
 
-
+    // 조회수 증가 도메인 메서드
     public void increaseViewCount() {
         this.viewCount = (this.viewCount != null ? this.viewCount : 0) + 1;
-    // Product(1) : ProductIngredient(N) 연관관계 매핑
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ProductIngredient> productIngredients = new ArrayList<>();
+    }
 
     // 소프트 삭제 여부 확인 도메인 메서드
     public boolean isDeleted() {
