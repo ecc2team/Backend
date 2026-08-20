@@ -29,7 +29,7 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId));
 
         // 조회수 1 증가 (Dirty Checking으로 DB 자동 업데이트)
-        product.setViewCount((product.getViewCount() != null ? product.getViewCount() : 0) + 1);
+        product.increaseViewCount();
 
         return ProductDetailResponse.from(product);
     }
@@ -74,5 +74,21 @@ public class ProductService {
                 .stream()
                 .map(ProductDetailResponse::from)
                 .toList();
+    }
+
+    // 5. 최근 본 상품 저장 및 viewedAt 최신화 (Upsert)
+    @Transactional
+    public void saveRecentProduct(Long userId, Long productId) {
+        // 상품 존재 여부 검증
+        if (!productRepository.existsById(productId)) {
+            throw new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId);
+        }
+
+        // 이미 본 상품이면 viewedAt만 현재 시간으로 갱신, 없으면 신규 생성
+        recentViewRepository.findByUserIdAndProductId(userId, productId)
+                .ifPresentOrElse(
+                        recentView -> recentView.setViewedAt(java.time.LocalDateTime.now()),
+                        () -> recentViewRepository.save(new RecentView(userId, productId, java.time.LocalDateTime.now()))
+                );
     }
 }

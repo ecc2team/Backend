@@ -80,4 +80,20 @@ public class ProductController {
                 "data", data
         ));
     }
+
+    // 5. 최근 본 상품 기록 저장/갱신 API 추가
+    @PostMapping("/api/v1/users/me/recent-products/{productId}")
+    public ResponseEntity<Map<String, Object>> saveRecentProduct(
+            Authentication authentication,
+            @PathVariable Long productId) {
+        Long userId = extractUserId(authentication);
+        productService.saveRecentProduct(userId, productId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "최근 본 상품 기록이 저장되었습니다.");
+        response.put("data", null);
+
+        return ResponseEntity.ok(response);
+    }
 }
