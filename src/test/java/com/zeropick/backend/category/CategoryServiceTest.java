@@ -58,7 +58,7 @@ class CategoryServiceTest {
         Product product = Mockito.mock(Product.class);
         given(product.getId()).willReturn(id);
         given(product.getName()).willReturn(name);
-        given(product.getGrade()).willReturn((short) grade);
+        given(product.getScore()).willReturn((short) grade);
         given(product.getWarningAdditive()).willReturn(warning);
         return product;
     }
