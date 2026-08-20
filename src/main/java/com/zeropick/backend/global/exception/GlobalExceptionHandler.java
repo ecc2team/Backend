@@ -1,5 +1,6 @@
 package com.zeropick.backend.global.exception;
 
+import com.zeropick.backend.comparison.exception.ComparisonCategoryMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // 비교함 카테고리 불일치 예외 처리 (25번 API 스펙)
+    @ExceptionHandler(ComparisonCategoryMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryMismatch(ComparisonCategoryMismatchException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(status.value(), "COMPARISON_CATEGORY_MISMATCH", e.getMessage()));
+    }
 
     // 이미 가입된 이메일, 이메일 미인증, 인증코드 만료/쿨다운 등
     @ExceptionHandler(IllegalStateException.class)

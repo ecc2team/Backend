@@ -3,6 +3,7 @@ package com.zeropick.backend.comparison.service;
 import com.zeropick.backend.comparison.dto.ComparisonBoxToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.entity.ComparisonBox;
+import com.zeropick.backend.comparison.exception.ComparisonCategoryMismatchException;
 import com.zeropick.backend.comparison.repository.ComparisonBoxRepository;
 import com.zeropick.backend.product.entity.Product;
 import com.zeropick.backend.product.repository.ProductRepository;
@@ -53,9 +54,9 @@ public class ComparisonService {
             Long existingProductId = userBoxes.get(0).getProductId();
             Product existingProduct = productRepository.findById(existingProductId).orElse(null);
 
-            // 다른 카테고리의 상품이 이미 들어있는 경우 (IllegalArgumentException 처리로 400 반환)
+            // 다른 카테고리의 상품이 이미 들어있는 경우 (커스텀 예외 던짐 -> 400 COMPARISON_CATEGORY_MISMATCH 반환)
             if (existingProduct != null && !existingProduct.getCategoryId().equals(newProduct.getCategoryId())) {
-                throw new IllegalArgumentException("같은 카테고리의 상품만 비교할 수 있습니다.");
+                throw new ComparisonCategoryMismatchException();
             }
         }
 
