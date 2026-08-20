@@ -88,25 +88,23 @@ public class ComparisonService {
             Product product = productRepository.findById(box.getProductId()).orElse(null);
             if (product == null) return null;
 
-            ProductCompareResponse.Nutrition nutrition = new ProductCompareResponse.Nutrition(
-                    product.getCalories(),
-                    product.getSugar() != null ? product.getSugar().doubleValue() : 0.0,
-                    product.getSodium() != null ? product.getSodium().doubleValue() : 0.0
-            );
+            ProductCompareResponse.Nutrition nutrition = ProductCompareResponse.Nutrition.builder()
+                    .calories(product.getCalories())
+                    .sugar(product.getSugar() != null ? product.getSugar().doubleValue() : 0.0)
+                    .sodium(product.getSodium() != null ? product.getSodium().doubleValue() : 0.0)
+                    .build();
 
-            ProductCompareResponse.KeyIngredients keyIngredients = new ProductCompareResponse.KeyIngredients(
-                    List.of("감미료"), List.of("첨가물")
-            );
-
-            return new ProductCompareResponse.ComparisonItem(
-                    product.getId(),
-                    product.getName(),
-                    product.getScore() != null ? product.getScore().intValue() : 0, 
-                    product.getWarningAdditive(),
-                    nutrition,
-                    keyIngredients,
-                    List.of()
-            );
+            return ProductCompareResponse.ComparisonItem.builder()
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .imageUrl(product.getImageUrl())
+                    .score(product.getScore() != null ? product.getScore().intValue() : 0)
+                    .warningAdditive(product.getWarningAdditive())
+                    .topBadges(List.of()) // 추후 필요 시 데이터 연동
+                    .nutrition(nutrition)
+                    .keyIngredients(List.of()) // 추후 필요 시 데이터 연동
+                    .allergies(List.of()) // 추후 필요 시 데이터 연동
+                    .build();
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         return new ProductCompareResponse(items.size(), items);

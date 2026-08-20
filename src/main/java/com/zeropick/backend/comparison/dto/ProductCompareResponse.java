@@ -1,41 +1,44 @@
 package com.zeropick.backend.comparison.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ProductCompareResponse {
 
     private Integer comparedCount;
     private List<ComparisonItem> comparisonTable;
 
     @Getter
+    @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ComparisonItem {
         private Long productId;
         private String productName;
-        private Integer score; // 👈 Short grade -> Integer score로 변경
+        private String imageUrl;
+        private Integer score;
         private Boolean warningAdditive;
+        private List<String> topBadges;
         private Nutrition nutrition;
-        private KeyIngredients keyIngredients;
+        private List<String> keyIngredients;
         private List<String> allergies;
     }
 
     @Getter
+    @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Nutrition {
         private Integer calories;
         private Double sugar;
         private Double sodium;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class KeyIngredients {
-        private List<String> sweeteners;
-        private List<String> additives;
     }
 }
