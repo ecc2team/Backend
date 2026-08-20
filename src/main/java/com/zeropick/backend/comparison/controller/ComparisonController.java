@@ -58,14 +58,14 @@ public class ComparisonController {
         ));
     }
 
-    // 3. 비교함 조회 및 상세 비교 API
+    // 3. 내 비교함 목록 조회 API (명세서 문구로 수정)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getComparisonTable(Authentication authentication) {
         Long userId = extractUserId(authentication);
         ProductCompareResponse data = comparisonService.getComparisonTable(userId);
         return ResponseEntity.ok(Map.of(
                 "status", 200,
-                "message", "비교함 조회가 완료되었습니다.",
+                "message", "내 비교함 목록 조회가 완료되었습니다.",
                 "data", data
         ));
     }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -13,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductCompareResponse {
 
-    private Integer comparedCount;
-    private List<ComparisonItem> comparisonTable;
+    private Integer savedCount;
+    private List<ComparisonItem> products;
 
     @Getter
     @Builder
@@ -24,21 +25,8 @@ public class ProductCompareResponse {
         private Long productId;
         private String productName;
         private String imageUrl;
+        private List<String> dietaryTags;
         private Integer score;
-        private Boolean warningAdditive;
-        private List<String> topBadges;
-        private Nutrition nutrition;
-        private List<String> keyIngredients;
-        private List<String> allergies;
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Nutrition {
-        private Integer calories;
-        private Double sugar;
-        private Double sodium;
+        private OffsetDateTime addedAt;
     }
 }
