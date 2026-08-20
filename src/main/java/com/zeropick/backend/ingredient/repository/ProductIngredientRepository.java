@@ -9,5 +9,5 @@ public interface ProductIngredientRepository extends JpaRepository<ProductIngred
     List<ProductIngredient> findByProductIdOrderBySequenceAsc(Long productId);
 
     // 여러 상품의 keyIngredients를 N+1 없이 한 번에 조회할 때 사용
-    List<ProductIngredient> findByProductInOrderByProductIdAscSequenceAsc(List<Long> productIds);
+    List<ProductIngredient> findByProductIdInOrderByProductIdAscSequenceAsc(List<Long> productIds);
 }
