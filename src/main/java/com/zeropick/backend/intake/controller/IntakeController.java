@@ -1,48 +1,63 @@
 package com.zeropick.backend.intake.controller;
 
+import com.zeropick.backend.global.exception.UnauthorizedException;
+import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
+import com.zeropick.backend.user.entity.User; 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1") // 👈 intake와 intakes 경로 혼용을 위해 공통 /api/v1 지정
+@RequestMapping("/api/v1") 
 @RequiredArgsConstructor
 public class IntakeController {
 
     private final IntakeService intakeService;
 
-    // 인증 토큰에서 userId 추출 헬퍼 메서드
     private Long extractUserId(Authentication authentication) {
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new IllegalArgumentException("인증 정보가 존재하지 않습니다.");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof Long) {
-            return (Long) principal;
-        }
-        return Long.parseLong(principal.toString());
+    if (authentication == null || authentication.getPrincipal() == null) {
+        throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
     }
+    
+    Object principal = authentication.getPrincipal();
+    
+    if (principal instanceof User) {
+        return ((User) principal).getId();
+    }
+    
+    throw new UnauthorizedException("유효하지 않은 인증 토큰 형태입니다.");
+}
 
     // 20번 API: 오늘 먹은 제품 기록하기 (POST /api/v1/intake/today)
     @PostMapping("/intake/today")
     public ResponseEntity<Map<String, Object>> addIntakeRecord(
             Authentication authentication,
             @RequestBody(required = false) Map<String, Object> body,
-            @RequestParam(required = false) Long productId
+            @RequestParam(required = false) Long productId,
+            @RequestParam(required = false) BigDecimal quantity
     ) {
         Long userId = extractUserId(authentication);
 
-        // JSON Request Body 또는 Query Param 모두 대응
+        // productId 세팅 (JSON Body 대응)
         Long targetProductId = productId;
         if (targetProductId == null && body != null && body.get("productId") != null) {
             targetProductId = Long.valueOf(body.get("productId").toString());
         }
 
-        intakeService.addIntakeRecord(userId, targetProductId);
+        // quantity 세팅 (JSON Body 대응)
+        BigDecimal targetQuantity = quantity;
+        if (targetQuantity == null && body != null && body.get("quantity") != null) {
+            targetQuantity = new BigDecimal(body.get("quantity").toString());
+        }
+
+        // 서비스 호출 (수량 포함)
+        intakeService.addIntakeRecord(userId, targetProductId, targetQuantity);
+
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "섭취 기록이 성공적으로 추가되었습니다."
@@ -55,7 +70,8 @@ public class IntakeController {
             Authentication authentication
     ) {
         Long userId = extractUserId(authentication);
-        Map<String, Object> data = intakeService.getTodayIntakeSummary(userId);
+        TodayIntakeSummaryResponse data = intakeService.getTodayIntakeSummary(userId);
+
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "오늘의 섭취량 조회가 완료되었습니다.",
