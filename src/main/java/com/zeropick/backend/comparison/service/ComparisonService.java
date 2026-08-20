@@ -83,7 +83,7 @@ public class ComparisonService {
             return new ProductCompareResponse.ComparisonItem(
                     product.getId(),
                     product.getName(),
-                    product.getGrade(),
+                    product.getScore(),
                     product.getWarningAdditive(),
                     nutrition,
                     keyIngredients,

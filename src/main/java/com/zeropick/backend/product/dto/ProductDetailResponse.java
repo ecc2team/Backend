@@ -39,7 +39,7 @@ public record ProductDetailResponse(
         return new ProductDetailResponse(
                 product.getId(),
                 product.getName(),
-                product.getGrade() != null ? product.getGrade().intValue() : 0,
+                product.getScore() != null ? product.getScore().intValue() : 0,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
                 new Nutrition(
                         product.getCalories() != null ? product.getCalories() : 0,
