@@ -101,8 +101,7 @@ public class ComparisonService {
             return new ProductCompareResponse.ComparisonItem(
                     product.getId(),
                     product.getName(),
-                    // ComparisonService.java 의 getComparisonTable() 내부
-                    product.getScore() != null ? product.getScore().intValue() : 0, // 👈 .intValue() 추가
+                    product.getScore() != null ? product.getScore().intValue() : 0, 
                     product.getWarningAdditive(),
                     nutrition,
                     keyIngredients,
