@@ -17,7 +17,7 @@ public class ProductCompareResponse {
     public static class ComparisonItem {
         private Long productId;
         private String productName;
-        private Short grade;
+        private Integer score; // 👈 Short grade -> Integer score로 변경
         private Boolean warningAdditive;
         private Nutrition nutrition;
         private KeyIngredients keyIngredients;
