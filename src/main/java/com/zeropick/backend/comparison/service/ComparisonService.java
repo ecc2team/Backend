@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,7 +79,7 @@ public class ComparisonService {
         return new ComparisonBoxToggleResponse(productId, false);
     }
 
-    // 3. 비교함 전체 목록 조회
+    // 3. 내 비교함 목록 조회 API
     public ProductCompareResponse getComparisonTable(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("존재하지 않는 유저입니다.");
@@ -88,25 +91,27 @@ public class ComparisonService {
             Product product = productRepository.findById(box.getProductId()).orElse(null);
             if (product == null) return null;
 
-            ProductCompareResponse.Nutrition nutrition = ProductCompareResponse.Nutrition.builder()
-                    .calories(product.getCalories())
-                    .sugar(product.getSugar() != null ? product.getSugar().doubleValue() : 0.0)
-                    .sodium(product.getSodium() != null ? product.getSodium().doubleValue() : 0.0)
-                    .build();
+            // Product 엔티티의 점수(score) 매핑 (null 안전 처리)
+            Integer score = (product.getScore() != null) ? product.getScore().intValue() : 0;
+
+            // ComparisonBox의 생성 시간(createdAt)을 OffsetDateTime(UTC)으로 변환
+            OffsetDateTime addedAt = (box.getCreatedAt() != null)
+                    ? box.getCreatedAt().atOffset(ZoneOffset.UTC)
+                    : null;
 
             return ProductCompareResponse.ComparisonItem.builder()
                     .productId(product.getId())
                     .productName(product.getName())
                     .imageUrl(product.getImageUrl())
-                    .score(product.getScore() != null ? product.getScore().intValue() : 0)
-                    .warningAdditive(product.getWarningAdditive())
-                    .topBadges(List.of()) // 추후 필요 시 데이터 연동
-                    .nutrition(nutrition)
-                    .keyIngredients(List.of()) // 추후 필요 시 데이터 연동
-                    .allergies(List.of()) // 추후 필요 시 데이터 연동
+                    .dietaryTags(Collections.emptyList()) // 추후 Product-Tag 연관관계 엔티티 연결
+                    .score(score)
+                    .addedAt(addedAt)
                     .build();
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        return new ProductCompareResponse(items.size(), items);
+        return ProductCompareResponse.builder()
+                .savedCount(items.size())
+                .products(items)
+                .build();
     }
 }
