@@ -3,7 +3,7 @@ package com.zeropick.backend.auth.oauth;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zeropick.backend.global.exception.UnauthorizedException;
-import com.zeropick.backend.user.AuthProvider;
+import com.zeropick.backend.user.enums.AuthProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

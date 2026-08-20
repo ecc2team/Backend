@@ -1,8 +1,11 @@
 package com.zeropick.backend.auth.dto;
 
+import com.zeropick.backend.user.dto.ProfileRequest;
+
 import java.util.List;
 
 public record OnboardingRequest(
+        ProfileRequest profile,
         List<String> preferredCategories,
         List<String> dislikedIngredients,
         List<String> allergyFlags

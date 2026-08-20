@@ -1,6 +1,6 @@
 package com.zeropick.backend.auth.oauth;
 
-import com.zeropick.backend.user.AuthProvider;
+import com.zeropick.backend.user.enums.AuthProvider;
 
 public interface SocialOAuthClient {
     AuthProvider provider();

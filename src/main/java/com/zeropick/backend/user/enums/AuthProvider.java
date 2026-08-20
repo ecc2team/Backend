@@ -1,4 +1,4 @@
-package com.zeropick.backend.user;
+package com.zeropick.backend.user.enums;
 
 public enum AuthProvider {
     LOCAL, KAKAO, GOOGLE

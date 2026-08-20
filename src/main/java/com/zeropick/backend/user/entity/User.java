@@ -1,12 +1,14 @@
 package com.zeropick.backend.user.entity;
 
+import com.zeropick.backend.user.enums.ActivityLevel;
+import com.zeropick.backend.user.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.zeropick.backend.user.AuthProvider;
+import com.zeropick.backend.user.enums.AuthProvider;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,8 +46,9 @@ public class User {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    private String gender;
+    private Gender gender;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
@@ -56,12 +59,13 @@ public class User {
     @Column(precision = 5, scale = 1)
     private BigDecimal weight;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "activity_level", length = 30)
-    private String activityLevel;
+    private ActivityLevel activityLevel;
 
     @Builder
     public User(String email, String password, String nickname, AuthProvider provider,
-                String gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, String activityLevel) {
+                Gender gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, ActivityLevel activityLevel) {
         this.email = email;
         this.password = password;
         this.provider = provider;
@@ -86,5 +90,13 @@ public class User {
     public void withdraw() {
         this.deletedAt = OffsetDateTime.now();
         this.refreshToken = null; // 탈퇴 시 refreshToken 재발급 경로 막아둠
+    }
+
+    public void updateProfile(Gender gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, ActivityLevel activityLevel) {
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.height = height;
+        this.weight = weight;
+        this.activityLevel = activityLevel;
     }
 }

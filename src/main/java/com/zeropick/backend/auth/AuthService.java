@@ -8,11 +8,11 @@ import com.zeropick.backend.global.security.JwtUtil;
 import com.zeropick.backend.ingredient.entity.Ingredient;
 import com.zeropick.backend.ingredient.repository.IngredientRepository;
 import com.zeropick.backend.category.Category;
-import com.zeropick.backend.user.*;
 import com.zeropick.backend.user.entity.User;
 import com.zeropick.backend.user.entity.UserAllergy;
 import com.zeropick.backend.user.entity.UserPreferredCategory;
 import com.zeropick.backend.user.entity.UserPreferredIngredient;
+import com.zeropick.backend.user.enums.AuthProvider;
 import com.zeropick.backend.user.repository.UserAllergyRepository;
 import com.zeropick.backend.user.repository.UserPreferredCategoryRepository;
 import com.zeropick.backend.user.repository.UserPreferredIngredientRepository;
@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.zeropick.backend.auth.oauth.SocialOAuthClient;
 import com.zeropick.backend.auth.oauth.SocialUserInfo;
-import java.util.List;
-
 import java.util.List;
 
 @Service

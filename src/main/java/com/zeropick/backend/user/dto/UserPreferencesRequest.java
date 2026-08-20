@@ -4,6 +4,7 @@ import java.util.List;
 
 // 마이페이지 취향/알레르기 수정 요청
 public record UserPreferencesRequest(
+        ProfileRequest profile,
         List<String> preferredCategories,
         List<String> dislikedIngredients,
         List<String> allergyFlags

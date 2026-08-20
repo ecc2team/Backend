@@ -1,7 +1,11 @@
 package com.zeropick.backend.user.dto;
 
-import com.zeropick.backend.user.AuthProvider;
+import com.zeropick.backend.user.enums.AuthProvider;
+import com.zeropick.backend.user.enums.ActivityLevel;
+import com.zeropick.backend.user.enums.Gender;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public record UserProfileResponse(
@@ -9,8 +13,12 @@ public record UserProfileResponse(
         String email,
         String nickname,
         AuthProvider provider,
-        List<String> preferredCategories,      // 선호하는 제품 카테고리 (Category.code)
-        List<String> dislikedIngredients,      // 피하고 싶은 성분 (Ingredient.code)
-        List<String> allergyFlags              // 알레르기 유발 성분 (Ingredient.code)
-) {
-}
+        Gender gender,
+        LocalDate birthDate,
+        BigDecimal height,
+        BigDecimal weight,
+        ActivityLevel activityLevel,
+        List<String> preferredCategories,
+        List<String> dislikedIngredients,
+        List<String> allergyFlags
+) {}

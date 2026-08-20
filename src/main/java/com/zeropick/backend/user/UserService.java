@@ -74,6 +74,11 @@ public class UserService {
                 user.getEmail(),
                 user.getNickname(),
                 user.getProvider(),
+                user.getGender(),
+                user.getBirthDate(),
+                user.getHeight(),
+                user.getWeight(),
+                user.getActivityLevel(),
                 userPreferredCategoryRepository.findAllByUserWithCategory(user).stream()
                         .map(upc -> upc.getCategory().getCode())
                         .toList(),
@@ -89,10 +94,23 @@ public class UserService {
     // 마이페이지 취향 수정: 기존 설정을 전부 지우고 새로 들어온 값으로 통째로 갈아끼운다.
     @Transactional
     public UserPreferencesResponse updatePreferences(User user, UserPreferencesRequest request) {
+        // 1. 유저 기본 프로필(신체 정보) 업데이트 (JPA Dirty Checking 활용)
+        if (request.profile() != null) {
+            user.updateProfile(
+                    request.profile().gender(),
+                    request.profile().birthDate(),
+                    request.profile().height(),
+                    request.profile().weight(),
+                    request.profile().activityLevel()
+            );
+        }
+
+        // 2. 기존 취향/알레르기 설정 삭제
         userPreferredCategoryRepository.deleteAllByUser(user);
         userPreferredIngredientRepository.deleteAllByUser(user);
         userAllergyRepository.deleteAllByUser(user);
 
+        // 3. 새로운 설정 저장 로직
         List<Category> categories = categoryRepository.findAllByCodeIn(request.preferredCategories());
         categories.forEach(category -> userPreferredCategoryRepository.save(
                 UserPreferredCategory.builder().user(user).category(category).build()
