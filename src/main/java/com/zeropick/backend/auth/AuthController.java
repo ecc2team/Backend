@@ -1,7 +1,6 @@
 package com.zeropick.backend.auth;
 
 import com.zeropick.backend.auth.dto.*;
-import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.global.response.ApiResponse;
 import com.zeropick.backend.global.security.CookieUtil;
 import jakarta.validation.Valid;
@@ -14,7 +13,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import com.zeropick.backend.user.AuthProvider;
+import com.zeropick.backend.user.enums.AuthProvider;
 import java.time.Duration;
 
 @RestController
