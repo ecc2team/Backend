@@ -171,7 +171,8 @@ public class CategoryService {
                 product.getId(),
                 product.getName(),
                 product.getScore() != null ? product.getScore().intValue() : null,
-                product.getWarningAdditive() != null ? product.getWarningAdditive() : false
+                product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
+                product.getViewCount()
         );
     }
 
@@ -183,6 +184,7 @@ public class CategoryService {
                 product.getCalories(),
                 product.getSugar() != null ? product.getSugar().doubleValue() : 0.0,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
+                product.getViewCount(),
                 keyIngredients
         );
     }
