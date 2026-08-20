@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import com.zeropick.backend.user.AuthProvider;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -41,12 +44,33 @@ public class User {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    @Column(length = 10)
+    private String gender;
+
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(precision = 5, scale = 1)
+    private BigDecimal height;
+
+    @Column(precision = 5, scale = 1)
+    private BigDecimal weight;
+
+    @Column(name = "activity_level", length = 30)
+    private String activityLevel;
+
     @Builder
-    public User(String email, String password, String nickname, AuthProvider provider) {
+    public User(String email, String password, String nickname, AuthProvider provider,
+                String gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, String activityLevel) {
         this.email = email;
         this.password = password;
         this.provider = provider;
         this.nickname = nickname;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.height = height;
+        this.weight = weight;
+        this.activityLevel = activityLevel;
     }
 
     public void updateRefreshToken(String refreshToken) {

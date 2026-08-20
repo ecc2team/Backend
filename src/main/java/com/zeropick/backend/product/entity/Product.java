@@ -2,9 +2,9 @@ package com.zeropick.backend.product.entity;
 
 import com.zeropick.backend.ingredient.entity.ProductIngredient;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -14,49 +14,69 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @Column(name = "external_code", length = 100, unique = true)
+    private String externalCode;
+
+    @Column(nullable = false, length = 100)
     private String name;
 
-    // 1. grade 삭제 후 score(점수) 단일 선언
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
+
+    @Column(name = "raw_materials", columnDefinition = "TEXT")
+    private String rawMaterials;
+
+    @Column(nullable = false)
+    private Short grade;
+
     private Short score;
 
-    // 2. view_count(조회수) 단일 선언
-    @Column(name = "view_count")
-    private Integer viewCount = 0;
-
-    // 3. summary(한줄평) 단일 선언
     @Column(columnDefinition = "TEXT")
     private String summary;
 
-    // 4. image_url(이미지 URL)
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(name = "warning_additive")
-    private Boolean warningAdditive;
+    @Column(name = "warning_additive", nullable = false)
+    private Boolean warningAdditive = false;
 
     @Column(nullable = false)
     private Integer calories;
 
+    @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal sugar;
 
+    @Column(precision = 7, scale = 2)
     private BigDecimal sodium;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @Column(precision = 5, scale = 2)
+    private BigDecimal protein;
+
+    @Column(name = "saturated_fat", precision = 5, scale = 2)
+    private BigDecimal saturatedFat;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal carbohydrate;
+
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount = 0;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
-    // 5. ProductDetailResponse의 getProductIngredients() 에러 해결을 위한 연관관계 추가
+    // Product(1) : ProductIngredient(N) 연관관계 매핑
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductIngredient> productIngredients = new ArrayList<>();
+
+    // 소프트 삭제 여부 확인 도메인 메서드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }
