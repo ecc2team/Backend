@@ -4,7 +4,7 @@ public record CategoryBestProductResponse(
         int rank,
         Long productId,
         String productName,
-        Integer grade,
+        Integer score,
         Boolean warningAdditive
 ) {
 }

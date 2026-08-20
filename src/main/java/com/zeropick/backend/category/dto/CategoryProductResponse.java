@@ -5,7 +5,9 @@ import java.util.List;
 public record CategoryProductResponse(
         Long productId,
         String productName,
-        Integer grade,
+        Integer score,
+        Integer calories,
+        Double sugar,
         Boolean warningAdditive,
         List<String> keyIngredients
 ) {
