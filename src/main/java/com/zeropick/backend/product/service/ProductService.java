@@ -41,8 +41,10 @@ public class ProductService {
         List<RecentProductsResponse.RecentProductItem> items = recentViews.stream().map(rv -> {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
-            String imageUrl = (product != null && product.getImageUrl() != null) ? product.getImageUrl() : "";
-            Integer score = (product != null && product.getScore() != null) ? product.getScore().intValue() : 0;
+
+            // 임시 세팅 (엔티티 내 실제 매핑 필드가 있다면 교체 가능)
+            List<String> dietaryTags = Collections.emptyList();
+            String riskLevel = "SAFE";
 
             // LocalDateTime을 OffsetDateTime으로 변환 처리
             java.time.OffsetDateTime viewedAt = (rv.getViewedAt() != null)
@@ -52,8 +54,8 @@ public class ProductService {
             return new RecentProductsResponse.RecentProductItem(
                     rv.getProductId(),
                     productName,
-                    Collections.singletonList(imageUrl),
-                    score,
+                    dietaryTags,
+                    riskLevel,
                     viewedAt
             );
         }).collect(Collectors.toList());
