@@ -6,6 +6,7 @@ import com.zeropick.backend.category.dto.CategoryBestProductResponse;
 import com.zeropick.backend.category.dto.CategoryProductListResponse;
 import com.zeropick.backend.category.dto.CategoryProductResponse;
 import com.zeropick.backend.category.dto.CategoryResponse;
+import com.zeropick.backend.comparison.repository.ComparisonBoxRepository;
 import com.zeropick.backend.ingredient.entity.Ingredient;
 import com.zeropick.backend.ingredient.entity.ProductIngredient;
 import com.zeropick.backend.ingredient.repository.IngredientRepository;
@@ -34,12 +35,16 @@ public class CategoryService {
     private static final int MAX_BEST_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
     private static final int KEY_INGREDIENT_LIMIT = 3;
-    private static final List<String> SUPPORTED_SORTS = List.of("recommended", "latest", "grade", "name");
+
+    private static final String SORT_POPULAR = "popular";
+    private static final List<String> SUPPORTED_SORTS =
+            List.of("recommended", "latest", "name", SORT_POPULAR, "views");
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final ProductIngredientRepository productIngredientRepository;
     private final IngredientRepository ingredientRepository;
+    private final ComparisonBoxRepository comparisonBoxRepository;
 
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAllByOrderByIdAsc().stream()
@@ -80,10 +85,13 @@ public class CategoryService {
         }
 
         Category category = findCategoryByCode(categoryCode);
-        Sort resolvedSort = resolveSort(sort);
+        String sortKey = normalizeSort(sort);
 
-        Page<Product> productPage = productRepository.findByCategoryIdAndDeletedAtIsNull(
-                category.getId(), PageRequest.of(page, size, resolvedSort));
+        Page<Product> productPage = SORT_POPULAR.equals(sortKey)
+                ? comparisonBoxRepository.findByCategoryOrderByComparisonBoxCountDesc(
+                category.getId(), PageRequest.of(page, size))
+                : productRepository.findByCategoryIdAndDeletedAtIsNull(
+                category.getId(), PageRequest.of(page, size, resolveSort(sortKey)));
 
         List<Long> productIds = productPage.getContent().stream().map(Product::getId).toList();
         Map<Long, List<String>> keyIngredientsByProductId = getKeyIngredientsByProductId(productIds);
@@ -108,15 +116,23 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다: " + code));
     }
 
-    private Sort resolveSort(String sort) {
+    private String normalizeSort(String sort) {
         String key = (sort == null || sort.isBlank()) ? "recommended" : sort.trim().toLowerCase();
+        if (!SUPPORTED_SORTS.contains(key)) {
+            throw new IllegalArgumentException(
+                    "지원하지 않는 정렬 기준입니다: " + sort + " (지원값: " + String.join(", ", SUPPORTED_SORTS) + ")");
+        }
+        return key;
+    }
+
+    private Sort resolveSort(String key) {
         return switch (key) {
             case "recommended" -> Sort.by(Sort.Order.desc("score").nullsLast(), Sort.Order.asc("id"));
             case "latest" -> Sort.by(Sort.Order.desc("id"));
-            case "grade" -> Sort.by(Sort.Order.asc("grade"), Sort.Order.desc("score").nullsLast());
             case "name" -> Sort.by(Sort.Order.asc("name"));
-            default -> throw new IllegalArgumentException(
-                    "지원하지 않는 정렬 기준입니다: " + sort + " (지원값: " + String.join(", ", SUPPORTED_SORTS) + ")");
+            case "views" -> Sort.by(Sort.Order.desc("viewCount"), Sort.Order.asc("id"));
+            default -> throw new IllegalStateException(
+                    "resolveSort()에서 처리할 수 없는 정렬 키입니다: " + key + " (popular는 별도 분기에서 처리되어야 함)");
         };
     }
 
@@ -154,7 +170,7 @@ public class CategoryService {
                 rank,
                 product.getId(),
                 product.getName(),
-                product.getGrade() != null ? product.getGrade().intValue() : null,
+                product.getScore() != null ? product.getScore().intValue() : null,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false
         );
     }
@@ -163,7 +179,9 @@ public class CategoryService {
         return new CategoryProductResponse(
                 product.getId(),
                 product.getName(),
-                product.getGrade() != null ? product.getGrade().intValue() : null,
+                product.getScore() != null ? product.getScore().intValue() : null,
+                product.getCalories(),
+                product.getSugar() != null ? product.getSugar().doubleValue() : 0.0,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
                 keyIngredients
         );
