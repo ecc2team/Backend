@@ -43,4 +43,7 @@ public class Product {
     @Column(name = "deleted_at")
     private OffsetDateTime deleteAt;
 
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount;
+
 }

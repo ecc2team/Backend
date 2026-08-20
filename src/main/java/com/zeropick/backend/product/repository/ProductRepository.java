@@ -4,6 +4,9 @@ import com.zeropick.backend.product.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,4 +17,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 베스트/리스트 조회 시 사용 (Pageable에 정렬만 다르게 넣어서 호출)
     Page<Product> findByCategoryIdAndDeletedAtIsNull(Long categoryId, Pageable pageable);
+
+    // 조회수 원자적 증가
+    @Modifying
+    @Query("UPDATE Product p SET p.viewCount = p.viewCount + 1 WHERE p.id = :productId")
+    void incrementViewCount(@Param("productId") Long productId);
 }
