@@ -41,7 +41,7 @@ public class Product {
     private String summary;
 
     @Column(name = "deleted_at")
-    private OffsetDateTime deleteAt;
+    private OffsetDateTime deletedAt;
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;

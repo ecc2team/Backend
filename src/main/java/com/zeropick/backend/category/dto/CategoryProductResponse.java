@@ -9,6 +9,7 @@ public record CategoryProductResponse(
         Integer calories,
         Double sugar,
         Boolean warningAdditive,
+        Integer viewCount,
         List<String> keyIngredients
 ) {
 }
