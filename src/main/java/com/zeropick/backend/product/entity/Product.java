@@ -30,6 +30,10 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String name;
 
+    private Short score;
+
+    @Column(name = "view_count")
+    private Integer viewCount = 0;
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
@@ -71,6 +75,12 @@ public class Product {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductIngredient> productIngredients = new ArrayList<>();
+
+
+    public void increaseViewCount() {
+        this.viewCount = (this.viewCount != null ? this.viewCount : 0) + 1;
     // Product(1) : ProductIngredient(N) 연관관계 매핑
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductIngredient> productIngredients = new ArrayList<>();
