@@ -1,17 +1,31 @@
 package com.zeropick.backend.user;
 
+import com.zeropick.backend.category.Category;
+import com.zeropick.backend.category.CategoryRepository;
 import com.zeropick.backend.email.EmailVerificationService;
+import com.zeropick.backend.ingredient.entity.Ingredient;
+import com.zeropick.backend.ingredient.repository.IngredientRepository;
 import com.zeropick.backend.user.dto.EmailCheckResponse;
 import com.zeropick.backend.user.dto.FindAccountResponse;
 import com.zeropick.backend.user.dto.ResetPasswordRequest;
+import com.zeropick.backend.user.dto.UserPreferencesRequest;
+import com.zeropick.backend.user.dto.UserPreferencesResponse;
+import com.zeropick.backend.user.dto.UserProfileResponse;
 import com.zeropick.backend.user.entity.User;
+import com.zeropick.backend.user.entity.UserAllergy;
+import com.zeropick.backend.user.entity.UserPreferredCategory;
+import com.zeropick.backend.user.entity.UserPreferredIngredient;
+import com.zeropick.backend.user.repository.UserAllergyRepository;
+import com.zeropick.backend.user.repository.UserPreferredCategoryRepository;
+import com.zeropick.backend.user.repository.UserPreferredIngredientRepository;
 import com.zeropick.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.processing.Find;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,6 +33,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService  emailVerificationService;
+    private final UserAllergyRepository userAllergyRepository;
+    private final UserPreferredIngredientRepository userPreferredIngredientRepository;
+    private final UserPreferredCategoryRepository userPreferredCategoryRepository;
+    private final IngredientRepository ingredientRepository;
+    private final CategoryRepository categoryRepository;
 
     public EmailCheckResponse checkEmail(String email){
         boolean isAvailable = !userRepository.existsByEmailAndDeletedAtIsNull(email);
@@ -28,7 +47,7 @@ public class UserService {
     public FindAccountResponse findAccount(String email) {
         User user= userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
-        return new FindAccountResponse(user.getEmail(), user.getProvider());
+        return new FindAccountResponse(user.getId(), user.getEmail(), user.getProvider());
     }
 
     @Transactional
@@ -47,5 +66,48 @@ public class UserService {
         // 이미 탈퇴 처리된 경우 아무 것도 하지 않고 조용히 종료
         userRepository.findByIdAndDeletedAtIsNull(userId)
                 .ifPresent(User::withdraw);
+    }
+
+    public UserProfileResponse getMyProfile(User user) {
+        return new UserProfileResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getProvider(),
+                userPreferredCategoryRepository.findAllByUserWithCategory(user).stream()
+                        .map(upc -> upc.getCategory().getCode())
+                        .toList(),
+                userPreferredIngredientRepository.findAllByUserWithIngredient(user).stream()
+                        .map(upi -> upi.getIngredient().getCode())
+                        .toList(),
+                userAllergyRepository.findAllByUserWithIngredient(user).stream()
+                        .map(ua -> ua.getIngredient().getCode())
+                        .toList()
+        );
+    }
+
+    // 마이페이지 취향 수정: 기존 설정을 전부 지우고 새로 들어온 값으로 통째로 갈아끼운다.
+    @Transactional
+    public UserPreferencesResponse updatePreferences(User user, UserPreferencesRequest request) {
+        userPreferredCategoryRepository.deleteAllByUser(user);
+        userPreferredIngredientRepository.deleteAllByUser(user);
+        userAllergyRepository.deleteAllByUser(user);
+
+        List<Category> categories = categoryRepository.findAllByCodeIn(request.preferredCategories());
+        categories.forEach(category -> userPreferredCategoryRepository.save(
+                UserPreferredCategory.builder().user(user).category(category).build()
+        ));
+
+        List<Ingredient> disliked = ingredientRepository.findAllByCodeIn(request.dislikedIngredients());
+        disliked.forEach(ingredient -> userPreferredIngredientRepository.save(
+                UserPreferredIngredient.builder().user(user).ingredient(ingredient).build()
+        ));
+
+        List<Ingredient> allergies = ingredientRepository.findAllByCodeIn(request.allergyFlags());
+        allergies.forEach(ingredient -> userAllergyRepository.save(
+                UserAllergy.builder().user(user).ingredient(ingredient).build()
+        ));
+
+        return new UserPreferencesResponse(user.getId(), OffsetDateTime.now());
     }
 }

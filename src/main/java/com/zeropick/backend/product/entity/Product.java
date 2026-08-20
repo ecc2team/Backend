@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "product")
@@ -18,8 +19,13 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+<<<<<<< HEAD
     // 1. grade 삭제 후 score(점수) 추가
     private Short score;
+=======
+    @Column(nullable = false)
+    private Short grade;
+>>>>>>> dev
 
     // 2. view_count(조회수) 추가
     @Column(name = "view_count")
@@ -44,4 +50,17 @@ public class Product {
 
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
+
+    // 미반영된 DB 컬럼 추가
+    private Short score;
+
+    @Column(columnDefinition = "TEXT")
+    private String summary;
+
+    @Column(name = "deleted_at")
+    private OffsetDateTime deletedAt;
+
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount;
+
 }
