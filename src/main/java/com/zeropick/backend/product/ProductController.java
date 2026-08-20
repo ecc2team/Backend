@@ -40,7 +40,7 @@ public class ProductController {
         ));
     }
 
-    // 2. 최근 본 상품 목록 조회 API (URL 수정 및 토큰 userId 적용)
+    // 2. 최근 본 상품 목록 조회 API
     @GetMapping("/api/v1/users/me/recent-products")
     public ResponseEntity<Map<String, Object>> getRecentProducts(Authentication authentication) {
         Long userId = extractUserId(authentication);
@@ -52,7 +52,7 @@ public class ProductController {
         ));
     }
 
-    // 3. 최근 본 상품 개별 삭제 API (토큰 userId 적용)
+    // 3. 최근 본 상품 개별 삭제 API
     @DeleteMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> deleteRecentProduct(
             Authentication authentication,
@@ -81,7 +81,7 @@ public class ProductController {
         ));
     }
 
-    // 5. 최근 본 상품 기록 저장/갱신 API 추가
+    // 5. 최근 본 상품 기록 저장/갱신 API
     @PostMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> saveRecentProduct(
             Authentication authentication,
