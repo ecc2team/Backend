@@ -3,7 +3,7 @@ package com.zeropick.backend.intake.controller;
 import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
-import com.zeropick.backend.user.entity.User; 
+import com.zeropick.backend.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,25 +13,32 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1") 
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class IntakeController {
 
     private final IntakeService intakeService;
 
+    // 인증 토큰에서 userId 추출 (User 객체, Long, String 타입 모두 대응)
     private Long extractUserId(Authentication authentication) {
-    if (authentication == null || authentication.getPrincipal() == null) {
-        throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User) {
+            return ((User) principal).getId();
+        }
+        if (principal instanceof Long) {
+            return (Long) principal;
+        }
+        try {
+            return Long.parseLong(principal.toString());
+        } catch (NumberFormatException e) {
+            throw new UnauthorizedException("유효하지 않은 인증 토큰 형태입니다.");
+        }
     }
-    
-    Object principal = authentication.getPrincipal();
-    
-    if (principal instanceof User) {
-        return ((User) principal).getId();
-    }
-    
-    throw new UnauthorizedException("유효하지 않은 인증 토큰 형태입니다.");
-}
 
     // 20번 API: 오늘 먹은 제품 기록하기 (POST /api/v1/intake/today)
     @PostMapping("/intake/today")
@@ -55,7 +62,6 @@ public class IntakeController {
             targetQuantity = new BigDecimal(body.get("quantity").toString());
         }
 
-        // 서비스 호출 (수량 포함)
         intakeService.addIntakeRecord(userId, targetProductId, targetQuantity);
 
         return ResponseEntity.ok(Map.of(
