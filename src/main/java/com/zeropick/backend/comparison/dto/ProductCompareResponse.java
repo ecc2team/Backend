@@ -10,8 +10,8 @@ import java.util.List;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductCompareResponse {
 
     private Integer savedCount;
@@ -19,8 +19,8 @@ public class ProductCompareResponse {
 
     @Getter
     @Builder
-    @AllArgsConstructor
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class ComparisonItem {
         private Long productId;
         private String productName;
