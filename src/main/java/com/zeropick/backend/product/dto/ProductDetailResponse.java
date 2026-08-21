@@ -19,7 +19,7 @@ public record ProductDetailResponse(
         Integer viewCount,
 
         @Schema(description = "상품 이미지 URL")
-        String image,
+        String imageUrl, // image -> imageUrl 로 명칭 수정
 
         @Schema(description = "한줄평", example = "스테비아, 알룰로스 등 프리미엄 성분 위주로 구성되어 있어, 믿고 선택할 수 있는 제품입니다.")
         String summary,
@@ -46,7 +46,7 @@ public record ProductDetailResponse(
                 product.getName(),
                 product.getScore() != null ? product.getScore().intValue() : 0,
                 product.getViewCount() != null ? product.getViewCount() : 0,
-                product.getImageUrl(),
+                product.getImageUrl(), // 엔티티의 imageUrl 값 바인딩
                 product.getSummary(),
                 new Nutrition(
                         product.getCalories() != null ? product.getCalories() : 0,
@@ -54,7 +54,7 @@ public record ProductDetailResponse(
                         product.getProtein() != null ? product.getProtein().doubleValue() : 0.0,
                         product.getSodium() != null ? product.getSodium().doubleValue() : 0.0
                 ),
-                Collections.emptyMap() // 성분 분석 결과 Map (Service에서 조합하여 채워넣는 용도)
+                Collections.emptyMap()
         );
     }
 }

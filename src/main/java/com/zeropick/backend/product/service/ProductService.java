@@ -47,6 +47,7 @@ public class ProductService {
         List<RecentProductsResponse.RecentProductItem> items = recentViews.stream().map(rv -> {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
+            String imageUrl = (product != null) ? product.getImageUrl() : null;
 
             List<String> dietaryTags = Collections.emptyList();
             String riskLevel = "SAFE";
@@ -58,6 +59,7 @@ public class ProductService {
             return new RecentProductsResponse.RecentProductItem(
                     rv.getProductId(),
                     productName,
+                    imageUrl,
                     dietaryTags,
                     riskLevel,
                     viewedAt

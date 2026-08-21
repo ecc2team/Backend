@@ -10,6 +10,7 @@ public record RecentProductsResponse(
     public record RecentProductItem(
             Long productId,
             String productName,
+            String imageUrl, // 이미지 URL 필드 추가
             List<String> dietaryTags,
             String riskLevel,
             OffsetDateTime viewedAt
