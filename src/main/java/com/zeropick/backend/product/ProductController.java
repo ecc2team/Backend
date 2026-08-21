@@ -17,16 +17,20 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // 인증 토큰에서 userId 추출하는 헬퍼 메서드
+    // 인증 토큰 및 안전한 userId 추출 헬퍼 메서드
     private Long extractUserId(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
-            throw new IllegalArgumentException("인증 정보가 존재하지 않습니다.");
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다. (인증 토큰 누락)");
         }
         Object principal = authentication.getPrincipal();
-        if (principal instanceof Long) {
-            return (Long) principal;
+        try {
+            if (principal instanceof Long) {
+                return (Long) principal;
+            }
+            return Long.parseLong(principal.toString());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("유효하지 않은 유저 식별자입니다.");
         }
-        return Long.parseLong(principal.toString());
     }
 
     // 1. 제품 상세 및 성분 분석 조회 API
@@ -40,7 +44,7 @@ public class ProductController {
         ));
     }
 
-    // 2. 최근 본 상품 목록 조회 API
+    // 2. 최근 본 상품 목록 조회 API (GET)
     @GetMapping("/api/v1/users/me/recent-products")
     public ResponseEntity<Map<String, Object>> getRecentProducts(Authentication authentication) {
         Long userId = extractUserId(authentication);
@@ -52,7 +56,7 @@ public class ProductController {
         ));
     }
 
-    // 3. 최근 본 상품 개별 삭제 API
+    // 3. 최근 본 상품 개별 삭제 API (DELETE)
     @DeleteMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> deleteRecentProduct(
             Authentication authentication,
@@ -68,7 +72,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    // 4. 상품 검색 API (query -> keyword로 파라미터명 변경)
+    // 4. 상품 검색 API (GET ?keyword=)
     @GetMapping("/api/v1/products/search")
     public ResponseEntity<Map<String, Object>> searchProducts(
             @RequestParam(name = "keyword") String keyword
@@ -81,7 +85,7 @@ public class ProductController {
         ));
     }
 
-    // 5. 최근 본 상품 기록 저장/갱신 API
+    // 5. 최근 본 상품 기록 저장/갱신 API (POST)
     @PostMapping("/api/v1/users/me/recent-products/{productId}")
     public ResponseEntity<Map<String, Object>> saveRecentProduct(
             Authentication authentication,
