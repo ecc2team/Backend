@@ -6,6 +6,7 @@ import com.zeropick.backend.product.entity.Product;
 import com.zeropick.backend.product.entity.RecentView;
 import com.zeropick.backend.product.repository.ProductRepository;
 import com.zeropick.backend.product.repository.RecentViewRepository;
+import com.zeropick.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final RecentViewRepository recentViewRepository;
+    private final UserRepository userRepository;
 
     // 1. 제품 상세 및 성분 분석 조회
     @Transactional
@@ -36,17 +38,19 @@ public class ProductService {
 
     // 2. 최근 본 상품 목록 조회
     public RecentProductsResponse getRecentProducts(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다. id=" + userId);
+        }
+
         List<RecentView> recentViews = recentViewRepository.findByUserIdOrderByViewedAtDesc(userId);
 
         List<RecentProductsResponse.RecentProductItem> items = recentViews.stream().map(rv -> {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
 
-            // 임시 세팅 (엔티티 내 실제 매핑 필드가 있다면 교체 가능)
             List<String> dietaryTags = Collections.emptyList();
             String riskLevel = "SAFE";
 
-            // LocalDateTime을 OffsetDateTime으로 변환 처리
             java.time.OffsetDateTime viewedAt = (rv.getViewedAt() != null)
                     ? rv.getViewedAt().atOffset(java.time.ZoneOffset.UTC)
                     : null;
@@ -66,6 +70,10 @@ public class ProductService {
     // 3. 최근 본 상품 개별 삭제
     @Transactional
     public void deleteRecentProduct(Long userId, Long productId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다. id=" + userId);
+        }
+
         recentViewRepository.findByUserIdAndProductId(userId, productId)
                 .ifPresent(recentViewRepository::delete);
     }
@@ -81,6 +89,11 @@ public class ProductService {
     // 5. 최근 본 상품 저장 및 viewedAt 최신화 (Upsert)
     @Transactional
     public void saveRecentProduct(Long userId, Long productId) {
+        // 유저 존재 여부 검증
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다. id=" + userId);
+        }
+
         // 상품 존재 여부 검증
         if (!productRepository.existsById(productId)) {
             throw new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId);
