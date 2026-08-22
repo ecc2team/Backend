@@ -77,6 +77,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "https://ecc-zeropick.netlify.app",
                 "https://ecc-zeropick.selee6047.workers.dev",
+                "https://ecc2team.github.io",
                 "http://localhost:8080",
                 "http://localhost:5173"
         ));
