@@ -61,7 +61,7 @@ public class CategoryService {
         Category category = findCategoryByCode(categoryCode);
 
         Sort bestSort = Sort.by(
-                Sort.Order.desc("score").nullsLast(),
+                Sort.Order.desc("score"),
                 Sort.Order.asc("id")
         );
 
@@ -127,7 +127,7 @@ public class CategoryService {
 
     private Sort resolveSort(String key) {
         return switch (key) {
-            case "recommended" -> Sort.by(Sort.Order.desc("score").nullsLast(), Sort.Order.asc("id"));
+            case "recommended" -> Sort.by(Sort.Order.desc("score"), Sort.Order.asc("id")); // ✅ nullsLast() 제거
             case "latest" -> Sort.by(Sort.Order.desc("id"));
             case "name" -> Sort.by(Sort.Order.asc("name"));
             case "views" -> Sort.by(Sort.Order.desc("viewCount"), Sort.Order.asc("id"));
@@ -176,6 +176,7 @@ public class CategoryService {
         );
     }
 
+    // CategoryService.java 내부
     private CategoryProductResponse toProductResponse(Product product, List<String> keyIngredients) {
         return new CategoryProductResponse(
                 product.getId(),
@@ -185,6 +186,7 @@ public class CategoryService {
                 product.getSugar() != null ? product.getSugar().doubleValue() : 0.0,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
                 product.getViewCount(),
+                product.getCompareCount() != null ? product.getCompareCount() : 0,
                 keyIngredients
         );
     }
