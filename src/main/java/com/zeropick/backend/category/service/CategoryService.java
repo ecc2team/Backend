@@ -76,7 +76,7 @@ public class CategoryService {
         return result;
     }
 
-    public CategoryProductListResponse getProducts(String categoryCode, int page, int size, String sort) {
+    public CategoryProductListResponse getProducts(String categoryCode, String keyword, int page, int size, String sort) {
         if (page < 0) {
             throw new IllegalArgumentException("page는 0 이상이어야 합니다.");
         }
@@ -88,10 +88,10 @@ public class CategoryService {
         String sortKey = normalizeSort(sort);
 
         Page<Product> productPage = SORT_POPULAR.equals(sortKey)
-                ? comparisonBoxRepository.findByCategoryOrderByComparisonBoxCountDesc(
-                category.getId(), PageRequest.of(page, size))
-                : productRepository.findByCategoryIdAndDeletedAtIsNull(
-                category.getId(), PageRequest.of(page, size, resolveSort(sortKey)));
+                ? comparisonBoxRepository.findPopularProductsByCategoryAndKeyword(
+                category.getId(), keyword, PageRequest.of(page, size))
+                : productRepository.findByCategoryIdAndKeyword(
+                category.getId(), keyword, PageRequest.of(page, size, resolveSort(sortKey)));
 
         List<Long> productIds = productPage.getContent().stream().map(Product::getId).toList();
         Map<Long, List<String>> keyIngredientsByProductId = getKeyIngredientsByProductId(productIds);

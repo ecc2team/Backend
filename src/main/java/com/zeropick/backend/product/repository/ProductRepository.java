@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+
     // 상품 이름(name)에 keyword가 포함된 항목들을 검색 (LIKE %keyword%)
     List<Product> findByNameContaining(String keyword);
 
@@ -22,4 +23,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Modifying
     @Query("UPDATE Product p SET p.viewCount = p.viewCount + 1 WHERE p.id = :productId")
     void incrementViewCount(@Param("productId") Long productId);
+
+    // 이름 검색 지원
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
+            "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))")
+    Page<Product> findByCategoryIdAndKeyword(
+            @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 }

@@ -44,6 +44,7 @@ public class CategoryController {
     @GetMapping("/{category}/products")
     public ResponseEntity<Map<String, Object>> getProductsByCategory(
             @PathVariable String category,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "recommended") String sort // 기본값 처리
@@ -54,7 +55,7 @@ public class CategoryController {
         }
 
         // sort 값 검증
-        CategoryProductListResponse data = categoryService.getProducts(category, page, size, sort);
+        CategoryProductListResponse data = categoryService.getProducts(category, keyword, page, size, sort);
 
         return ResponseEntity.ok(Map.of(
                 "status", 200,
