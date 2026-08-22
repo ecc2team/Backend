@@ -1,9 +1,9 @@
 package com.zeropick.backend.comparison.controller;
 
-import com.zeropick.backend.comparison.dto.ComparisonBoxToggleRequest;
-import com.zeropick.backend.comparison.dto.ComparisonBoxToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.service.ComparisonService;
+import com.zeropick.backend.global.exception.UnauthorizedException;
+import com.zeropick.backend.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,60 +12,47 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/comparison-box")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ComparisonController {
 
     private final ComparisonService comparisonService;
 
-    // 인증 토큰에서 userId를 안전하게 추출하는 헬퍼 메서드
+    // 안전한 Authentication 주입 객체 파싱 (User@... 400 에러 해결)
     private Long extractUserId(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
-            throw new IllegalArgumentException("인증 정보가 존재하지 않습니다.");
+            throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
         }
+
         Object principal = authentication.getPrincipal();
-        if (principal instanceof Long) {
-            return (Long) principal;
+
+        if (principal instanceof User user) {
+            return user.getId();
         }
-        return Long.parseLong(principal.toString());
+        if (principal instanceof Long id) {
+            return id;
+        }
+        if (principal instanceof String str) {
+            try {
+                return Long.parseLong(str);
+            } catch (NumberFormatException e) {
+                throw new UnauthorizedException("유효하지 않은 유저 식별자입니다.");
+            }
+        }
+        throw new UnauthorizedException("유효하지 않은 인증 토큰 형태입니다.");
     }
 
-    // 1. 비교함 상품 담기/빼기 토글 API
-    @PostMapping("/toggle")
-    public ResponseEntity<Map<String, Object>> toggleComparisonBox(
-            Authentication authentication,
-            @RequestBody ComparisonBoxToggleRequest request) {
+    // 내 비교함 목록 조회 (GET /api/v1/comparison-box)
+    @GetMapping("/comparison-box")
+    public ResponseEntity<Map<String, Object>> getComparisonBox(Authentication authentication) {
         Long userId = extractUserId(authentication);
-        ComparisonBoxToggleResponse data = comparisonService.toggleComparisonBox(userId, request.getProductId());
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "비교함 상태가 변경되었습니다.",
-                "data", data
-        ));
-    }
 
-    // 2. 비교함 상품 삭제 API
-    @DeleteMapping("/products/{productId}")
-    public ResponseEntity<Map<String, Object>> deleteComparisonBoxProduct(
-            Authentication authentication,
-            @PathVariable Long productId) {
-        Long userId = extractUserId(authentication);
-        ComparisonBoxToggleResponse data = comparisonService.deleteComparisonBoxProduct(userId, productId);
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "비교함에서 상품이 삭제되었습니다.",
-                "data", data
-        ));
-    }
-
-    // 3. 내 비교함 목록 조회 API (명세서 문구로 수정)
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> getComparisonTable(Authentication authentication) {
-        Long userId = extractUserId(authentication);
+        // Service의 getComparisonTable 메서드 호출
         ProductCompareResponse data = comparisonService.getComparisonTable(userId);
+
         return ResponseEntity.ok(Map.of(
                 "status", 200,
-                "message", "내 비교함 목록 조회가 완료되었습니다.",
+                "message", "비교함 조회가 완료되었습니다.",
                 "data", data
         ));
     }
