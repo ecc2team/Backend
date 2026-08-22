@@ -94,9 +94,13 @@ public class UserService {
     // 마이페이지 취향 수정: 기존 설정을 전부 지우고 새로 들어온 값으로 통째로 갈아끼운다.
     @Transactional
     public UserPreferencesResponse updatePreferences(User user, UserPreferencesRequest request) {
-        // 1. 유저 기본 프로필(신체 정보) 업데이트 (JPA Dirty Checking 활용)
+
+        User realUser = userRepository.findByIdAndDeletedAtIsNull(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 1. 유저 기본 프로필(신체 정보) 업데이트
         if (request.profile() != null) {
-            user.updateProfile(
+            realUser.updateProfile(
                     request.profile().gender(),
                     request.profile().birthDate(),
                     request.profile().height(),
@@ -106,26 +110,26 @@ public class UserService {
         }
 
         // 2. 기존 취향/알레르기 설정 삭제
-        userPreferredCategoryRepository.deleteAllByUser(user);
-        userPreferredIngredientRepository.deleteAllByUser(user);
-        userAllergyRepository.deleteAllByUser(user);
+        userPreferredCategoryRepository.deleteAllByUser(realUser);
+        userPreferredIngredientRepository.deleteAllByUser(realUser);
+        userAllergyRepository.deleteAllByUser(realUser);
 
         // 3. 새로운 설정 저장 로직
         List<Category> categories = categoryRepository.findAllByCodeIn(request.preferredCategories());
         categories.forEach(category -> userPreferredCategoryRepository.save(
-                UserPreferredCategory.builder().user(user).category(category).build()
+                UserPreferredCategory.builder().user(realUser).category(category).build()
         ));
 
         List<Ingredient> disliked = ingredientRepository.findAllByCodeIn(request.dislikedIngredients());
         disliked.forEach(ingredient -> userPreferredIngredientRepository.save(
-                UserPreferredIngredient.builder().user(user).ingredient(ingredient).build()
+                UserPreferredIngredient.builder().user(realUser).ingredient(ingredient).build()
         ));
 
         List<Ingredient> allergies = ingredientRepository.findAllByCodeIn(request.allergyFlags());
         allergies.forEach(ingredient -> userAllergyRepository.save(
-                UserAllergy.builder().user(user).ingredient(ingredient).build()
+                UserAllergy.builder().user(realUser).ingredient(ingredient).build()
         ));
 
-        return new UserPreferencesResponse(user.getId(), OffsetDateTime.now());
+        return new UserPreferencesResponse(realUser.getId(), OffsetDateTime.now());
     }
 }
