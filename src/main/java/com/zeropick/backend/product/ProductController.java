@@ -1,6 +1,7 @@
 package com.zeropick.backend.product;
 
 import com.zeropick.backend.product.dto.ProductDetailResponse;
+import com.zeropick.backend.product.dto.ProductPageResponse;
 import com.zeropick.backend.product.dto.RecentProductsResponse;
 import com.zeropick.backend.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -99,5 +100,27 @@ public class ProductController {
         response.put("data", null);
 
         return ResponseEntity.ok(response);
+    }
+
+    // 6. 전체 상품 리스트 조회 API
+    @GetMapping("/api/v1/products")
+    public ResponseEntity<Map<String, Object>> getAllProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "recommended") String sort
+    ) {
+        if (size < 1 || size > 100) {
+            throw new IllegalArgumentException("size는 1에서 100 사이여야 합니다.");
+        }
+
+        // Object -> ProductPageResponse 로 확실하게 타입 명시
+        ProductPageResponse data = productService.getAllProducts(keyword, page, size, sort);
+
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "전체 상품 리스트 조회가 완료되었습니다.",
+                "data", data
+        ));
     }
 }

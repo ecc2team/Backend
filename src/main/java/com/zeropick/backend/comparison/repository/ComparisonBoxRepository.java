@@ -19,16 +19,29 @@ public interface ComparisonBoxRepository extends JpaRepository<ComparisonBox, Lo
 
     boolean existsByUserIdAndProductId(Long userId, Long productId);
 
-    // comparison_box에 현재 담겨있는 횟수를 기준으로 인기순 조회 + 이름 검색 지원
+    // 1. 카테고리별 인기순 정렬 (CategoryService 에서 사용됨 - 덮어씌워졌던 부분 복구!)
     @Query(value = "SELECT p FROM Product p LEFT JOIN ComparisonBox cb ON cb.productId = p.id " +
             "WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
-            "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%')) " +
+            "AND p.name LIKE CONCAT('%', :keyword, '%') " +
             "GROUP BY p.id " +
             "ORDER BY COUNT(cb.id) DESC, p.id ASC",
             countQuery = "SELECT COUNT(p) FROM Product p WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
-                    "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))")
+                    "AND p.name LIKE CONCAT('%', :keyword, '%')")
     Page<Product> findPopularProductsByCategoryAndKeyword(
             @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
+
+    // 2. 전체 상품 인기순 정렬 (ProductService 에서 사용됨 - 아까 추가한 부분)
+    @Query(value = "SELECT p FROM Product p LEFT JOIN ComparisonBox cb ON cb.productId = p.id " +
+            "WHERE p.deletedAt IS NULL " +
+            "AND p.name LIKE CONCAT('%', :keyword, '%') " +
+            "GROUP BY p.id " +
+            "ORDER BY COUNT(cb.id) DESC, p.id ASC",
+            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.deletedAt IS NULL " +
+                    "AND p.name LIKE CONCAT('%', :keyword, '%')")
+    Page<Product> findAllPopularProductsByKeyword(
             @Param("keyword") String keyword,
             Pageable pageable
     );

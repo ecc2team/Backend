@@ -27,9 +27,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 이름 검색 지원
     @Query("SELECT p FROM Product p " +
             "WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
-            "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))")
+            "AND p.name LIKE CONCAT('%', :keyword, '%')")
     Page<Product> findByCategoryIdAndKeyword(
             @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
+
+    // 전체 상품 리스트 조회 (이름 검색 지원, 카테고리 무관)
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.deletedAt IS NULL " +
+            "AND p.name LIKE CONCAT('%', :keyword, '%')")
+    Page<Product> findAllProductsByKeyword(
             @Param("keyword") String keyword,
             Pageable pageable
     );
