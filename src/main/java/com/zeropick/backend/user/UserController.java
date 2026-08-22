@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static io.jsonwebtoken.Jwts.header;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -25,6 +24,13 @@ public class UserController {
     public ResponseEntity<ApiResponse<EmailCheckResponse>> checkEmail(@RequestParam String email) {
         EmailCheckResponse response = userService.checkEmail(email);
         return ResponseEntity.ok(ApiResponse.success("이메일 중복 확인 결과입니다.", response));
+    }
+
+    // 닉네임 중복 확인: 회원가입 폼 실시간 검증 + 마이페이지 프로필 수정 시 재사용
+    @GetMapping("/check-nickname")
+    public ResponseEntity<ApiResponse<NicknameCheckResponse>> checkNickname(@RequestParam String nickname) {
+        NicknameCheckResponse response = userService.checkNickname(nickname);
+        return ResponseEntity.ok(ApiResponse.success("닉네임 중복 확인 결과입니다.", response));
     }
 
     @PostMapping("/find-account")
