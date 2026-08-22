@@ -42,4 +42,24 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("keyword") String keyword,
             Pageable pageable
     );
+
+    // 취향 1차 후보: 선호 카테고리에 속하면서 제외 대상(알러지/비선호 성분 포함)이 아닌 상품
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.categoryId IN :categoryIds " +
+            "AND p.deletedAt IS NULL " +
+            "AND p.id NOT IN :excludedIds")
+    List<Product> findRecommendedByCategoryIds(
+            @Param("categoryIds") List<Long> categoryIds,
+            @Param("excludedIds") List<Long> excludedIds,
+            Pageable pageable
+    );
+
+    // 취향 2차 후보: 선호 카테고리만으로 size를 못 채웠을 때, 전체 상품에서 나머지 채우기
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.deletedAt IS NULL " +
+            "AND p.id NOT IN :excludedIds")
+    List<Product> findRecommendedFallback(
+            @Param("excludedIds") List<Long> excludedIds,
+            Pageable pageable
+    );
 }
