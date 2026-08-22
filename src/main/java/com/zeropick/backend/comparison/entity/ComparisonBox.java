@@ -30,4 +30,6 @@ public class ComparisonBox {
         this.productId = productId;
         this.createdAt = LocalDateTime.now();
     }
+
+
 }

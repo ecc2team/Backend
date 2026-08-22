@@ -19,15 +19,17 @@ public interface ComparisonBoxRepository extends JpaRepository<ComparisonBox, Lo
 
     boolean existsByUserIdAndProductId(Long userId, Long productId);
 
-    // comparison_box에 현재 담겨있는 횟수를 기준으로 인기순 조회
+    // comparison_box에 현재 담겨있는 횟수를 기준으로 인기순 조회 + 이름 검색 지원
     @Query(value = "SELECT p FROM Product p LEFT JOIN ComparisonBox cb ON cb.productId = p.id " +
             "WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
+            "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%')) " +
             "GROUP BY p.id " +
             "ORDER BY COUNT(cb.id) DESC, p.id ASC",
-            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL")
-
-    Page<Product> findByCategoryOrderByComparisonBoxCountDesc(
+            countQuery = "SELECT COUNT(p) FROM Product p WHERE p.categoryId = :categoryId AND p.deletedAt IS NULL " +
+                    "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))")
+    Page<Product> findPopularProductsByCategoryAndKeyword(
             @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
             Pageable pageable
     );
 }
