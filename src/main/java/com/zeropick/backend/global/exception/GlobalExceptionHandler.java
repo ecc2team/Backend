@@ -2,6 +2,7 @@ package com.zeropick.backend.global.exception;
 
 import com.zeropick.backend.comparison.exception.ComparisonCategoryMismatchException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 비교함 카테고리 불일치 예외 처리 (25번 API 스펙)
+    // 비교함 카테고리 불일치 예외 처리
     @ExceptionHandler(ComparisonCategoryMismatchException.class)
     public ResponseEntity<ErrorResponse> handleCategoryMismatch(ComparisonCategoryMismatchException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -72,6 +73,15 @@ public class GlobalExceptionHandler {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status)
                 .body(new ErrorResponse(status.value(), e.getMessage()));
+    }
+
+    // DB 유니크/FK 등 데이터 정합성 제약조건 위반 (예: 동일 취향 재저장 시 유니크 충돌 등)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        log.warn("데이터 정합성 제약조건 위반", e);
+        return ResponseEntity.status(status)
+                .body(new ErrorResponse(status.value(), "DATA_CONFLICT", "요청을 처리하는 중 데이터 충돌이 발생했습니다."));
     }
 
     // 그 외 예상하지 못한 모든 예외
