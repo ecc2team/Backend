@@ -17,6 +17,7 @@ public class EmailVerificationService {
 
     public static final long CODE_EXPIRATION_MINUTES = 5;
     private static final long COOLDOWN_MINUTES = 1;
+    public static final long RESET_SESSION_MINUTES = 10;
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final EmailSender emailSender;
@@ -61,6 +62,8 @@ public class EmailVerificationService {
         }
 
         verification.markVerified();
+
+        verification.extendExpiry(RESET_SESSION_MINUTES);
     }
 
     public void assertSessionVerified(String sessionId, String email) {

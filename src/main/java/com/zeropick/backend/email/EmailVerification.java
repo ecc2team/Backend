@@ -66,5 +66,8 @@ public class EmailVerification {
         this.verified = true;
     }
 
+    public void extendExpiry(long minutes) {
+        this.expiredAt = OffsetDateTime.now().plusMinutes(minutes);
+    }
 
 }
