@@ -16,6 +16,6 @@ public interface UserPreferredIngredientRepository extends JpaRepository<UserPre
     @Query("delete from UserPreferredIngredient upi where upi.user = :user")
     void deleteAllByUser(@Param("user") User user);
 
-    @Query("SELECT ua FROM UserAllergy ua JOIN FETCH ua.ingredient WHERE ua.user = :user")
+    @Query("SELECT upi FROM UserPreferredIngredient upi JOIN FETCH upi.ingredient WHERE upi.user = :user")
     List<UserPreferredIngredient> findAllByUserWithIngredient(@Param("user") User user);
 }
