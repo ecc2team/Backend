@@ -19,7 +19,7 @@ public class ComparisonController {
 
     private final ComparisonService comparisonService;
 
-    // 안전한 Authentication 주입 객체 파싱 (User@... 400 에러 해결)
+    // 안전한 Authentication 주입 객체 파싱
     private Long extractUserId(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
@@ -56,9 +56,41 @@ public class ComparisonController {
         ));
     }
 
-    // 2. 비교함 상품 토글/담기 (POST /api/v1/comparison-box/{productId})
+    // 2-A. 비교함 상품 토글 (POST /api/v1/comparison-box/{productId})
     @PostMapping("/comparison-box/{productId}")
-    public ResponseEntity<Map<String, Object>> toggleComparisonBox(
+    public ResponseEntity<Map<String, Object>> toggleComparisonBoxPath(
+            Authentication authentication,
+            @PathVariable Long productId
+    ) {
+        Long userId = extractUserId(authentication);
+        ComparisonBoxToggleResponse data = comparisonService.toggleComparisonBox(userId, productId);
+
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "비교함 토글 처리가 완료되었습니다.",
+                "data", data
+        ));
+    }
+
+    // 2-B. 프론트엔드가 /comparison-box/toggle?productId= 로 보낼 때 지원 (POST /api/v1/comparison-box/toggle)
+    @PostMapping("/comparison-box/toggle")
+    public ResponseEntity<Map<String, Object>> toggleComparisonBoxQuery(
+            Authentication authentication,
+            @RequestParam(name = "productId") Long productId
+    ) {
+        Long userId = extractUserId(authentication);
+        ComparisonBoxToggleResponse data = comparisonService.toggleComparisonBox(userId, productId);
+
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "비교함 토글 처리가 완료되었습니다.",
+                "data", data
+        ));
+    }
+
+    // 2-C. 프론트엔드가 /comparison-box/toggle/{productId} 로 보낼 때 지원 (POST /api/v1/comparison-box/toggle/{productId})
+    @PostMapping("/comparison-box/toggle/{productId}")
+    public ResponseEntity<Map<String, Object>> toggleComparisonBoxPathToggle(
             Authentication authentication,
             @PathVariable Long productId
     ) {
