@@ -3,6 +3,7 @@ package com.zeropick.backend.product;
 import com.zeropick.backend.global.exception.UnauthorizedException;
 import com.zeropick.backend.product.dto.ProductDetailResponse;
 import com.zeropick.backend.product.dto.ProductPageResponse;
+import com.zeropick.backend.product.dto.ProductRecommendationResponse;
 import com.zeropick.backend.product.dto.RecentProductsResponse;
 import com.zeropick.backend.product.service.ProductService;
 import com.zeropick.backend.user.entity.User;
@@ -124,6 +125,21 @@ public class ProductController {
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "전체 상품 리스트 조회가 완료되었습니다.",
+                "data", data
+        ));
+    }
+
+    // 로그인한 유저의 취향/알러지 기반 맞춤 추천
+    @GetMapping("/products/recommendations")
+    public ResponseEntity<Map<String, Object>> getRecommendations(
+            Authentication authentication,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Long userId = extractUserId(authentication);
+        ProductRecommendationResponse data = productService.getRecommendations(userId, size);
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "맞춤 추천 상품 조회가 완료되었습니다.",
                 "data", data
         ));
     }
