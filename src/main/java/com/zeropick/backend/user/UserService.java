@@ -5,12 +5,7 @@ import com.zeropick.backend.category.CategoryRepository;
 import com.zeropick.backend.email.EmailVerificationService;
 import com.zeropick.backend.ingredient.entity.Ingredient;
 import com.zeropick.backend.ingredient.repository.IngredientRepository;
-import com.zeropick.backend.user.dto.EmailCheckResponse;
-import com.zeropick.backend.user.dto.FindAccountResponse;
-import com.zeropick.backend.user.dto.ResetPasswordRequest;
-import com.zeropick.backend.user.dto.UserPreferencesRequest;
-import com.zeropick.backend.user.dto.UserPreferencesResponse;
-import com.zeropick.backend.user.dto.UserProfileResponse;
+import com.zeropick.backend.user.dto.*;
 import com.zeropick.backend.user.entity.User;
 import com.zeropick.backend.user.entity.UserAllergy;
 import com.zeropick.backend.user.entity.UserPreferredCategory;
@@ -30,6 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+    private static final int NICKNAME_MAX_LENGTH = 30;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService  emailVerificationService;
@@ -42,6 +39,22 @@ public class UserService {
     public EmailCheckResponse checkEmail(String email){
         boolean isAvailable = !userRepository.existsByEmailAndDeletedAtIsNull(email);
         return new EmailCheckResponse(email, isAvailable);
+    }
+
+    // 닉네임 중복 확인
+    public NicknameCheckResponse checkNickname(String nickname) {
+        String trimmed = nickname == null ? "" : nickname.trim();
+
+        if (trimmed.isEmpty()) {
+            throw new IllegalArgumentException("닉네임을 입력해주세요.");
+        }
+        if (trimmed.length() > NICKNAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("닉네임은 " + NICKNAME_MAX_LENGTH + "자 이하여야 합니다.");
+        }
+
+        // 탈퇴 회원의 닉네임은 다시 사용 가능
+        boolean isAvailable = !userRepository.existsByNicknameAndDeletedAtIsNull(trimmed);
+        return new NicknameCheckResponse(trimmed, isAvailable);
     }
 
     public FindAccountResponse findAccount(String email) {
