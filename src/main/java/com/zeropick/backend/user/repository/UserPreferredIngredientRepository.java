@@ -1,6 +1,7 @@
 package com.zeropick.backend.user.repository;
 
 import com.zeropick.backend.user.entity.User;
+import com.zeropick.backend.user.entity.UserAllergy;
 import com.zeropick.backend.user.entity.UserPreferredIngredient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,6 +16,6 @@ public interface UserPreferredIngredientRepository extends JpaRepository<UserPre
     @Query("delete from UserPreferredIngredient upi where upi.user = :user")
     void deleteAllByUser(@Param("user") User user);
 
-    @Query("select upi from UserPreferredIngredient upi join fetch upi.ingredient where upi.user = :user")
+    @Query("SELECT ua FROM UserAllergy ua JOIN FETCH ua.ingredient WHERE ua.user = :user")
     List<UserPreferredIngredient> findAllByUserWithIngredient(@Param("user") User user);
 }

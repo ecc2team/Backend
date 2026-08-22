@@ -15,6 +15,6 @@ public interface UserAllergyRepository extends JpaRepository<UserAllergy, Long> 
     @Query("delete from UserAllergy ua where ua.user = :user")
     void deleteAllByUser(@Param("user") User user);
 
-    @Query("select ua from UserAllergy ua join fetch ua.ingredient where ua.user = :user")
+    @Query("SELECT ua FROM UserAllergy ua JOIN FETCH ua.ingredient WHERE ua.user = :user")
     List<UserAllergy> findAllByUserWithIngredient(@Param("user") User user);
 }
