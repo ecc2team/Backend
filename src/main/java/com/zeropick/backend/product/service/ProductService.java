@@ -54,10 +54,10 @@ public class ProductService {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
 
-            // imageUrl 이 null일 경우 더미 이미지 세팅
+            // imageUrl 이 null이거나 깨졌을 경우 공개 더미 이미지 세팅 (picsum 적용)
             String imageUrl = (product != null && product.getImageUrl() != null && !product.getImageUrl().isBlank())
                     ? product.getImageUrl()
-                    : "https://via.placeholder.com/300x300.png?text=No+Image";
+                    : "https://picsum.photos/300/300";
 
             List<String> dietaryTags = Collections.emptyList();
             String riskLevel = "SAFE";
