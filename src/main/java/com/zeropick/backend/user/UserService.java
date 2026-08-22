@@ -57,7 +57,7 @@ public class UserService {
         User user = userRepository.findByEmailAndDeletedAtIsNull(request.email())
                 .orElseThrow(() -> new IllegalStateException("소셜 로그인 계정은 비밀번호를 재설정할 수 없습니다."));
 
-        user.updatePassword(passwordEncoder.encode(request.newPasssword()));
+        user.updatePassword(passwordEncoder.encode(request.newPassword()));
         emailVerificationService.invalidate(request.email());
     }
 
