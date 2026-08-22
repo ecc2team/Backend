@@ -82,12 +82,17 @@ public class ProductService {
                 .ifPresent(recentViewRepository::delete);
     }
 
-    // 4. 상품 검색
+    // 4. 상품 검색 (키워드 검증 및 안정화 적용)
     public List<ProductDetailResponse> searchProducts(String keyword) {
-        return productRepository.findByNameContaining(keyword)
-                .stream()
+        if (keyword == null || keyword.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        List<Product> products = productRepository.findByNameContaining(keyword);
+
+        return products.stream()
                 .map(ProductDetailResponse::from)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // 5. 최근 본 상품 저장 및 viewedAt 최신화
