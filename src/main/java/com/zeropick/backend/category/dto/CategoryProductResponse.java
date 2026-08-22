@@ -10,6 +10,7 @@ public record CategoryProductResponse(
         Double sugar,
         Boolean warningAdditive,
         Integer viewCount,
+        Integer compareCount,
         List<String> keyIngredients
 ) {
 }

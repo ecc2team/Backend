@@ -68,6 +68,9 @@ public class Product {
     @Column(name = "view_count", nullable = false)
     private Integer viewCount = 0;
 
+    @Column(name = "compare_count", nullable = false)
+    private Integer compareCount = 0;
+
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
