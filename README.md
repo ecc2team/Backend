@@ -192,4 +192,4 @@ cd Backend
 
 ## 🗂 ERD
 
-<img width="2243" height="1260" alt="erd v1 (12)" src="https://github.com/user-attachments/assets/83e33b57-0383-4247-a4ca-155567cbbf93" />
+<img width="2018" height="1551" alt="image" src="https://github.com/user-attachments/assets/29e6cff2-8e1c-4179-b0f7-081c96ae4073" />
