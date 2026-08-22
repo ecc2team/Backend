@@ -3,7 +3,6 @@ package com.zeropick.backend.global.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,6 +24,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,20 +34,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // REST API이므로 CSRF 필터는 비활성화. reissue/logout은 consumes=application/json
-                // CORS Origin 화이트리스트 조합으로 CSRF 방어함
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // CORS 설정
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))     // 세션 사용 안함
+                // 인증 실패(토큰 없음/만료/위조) 시 기본 403 대신 401+JSON으로 응답하도록 고정.
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/onboarding").authenticated()
+                        // 아래 permitAll("/api/v1/products/**" 등)보다 반드시 먼저 매칭되어야 함
+                        .requestMatchers(
+                                "/api/v1/auth/onboarding",
+                                "/api/v1/products/recommendations"
+                        ).authenticated()
+
                         .requestMatchers(
                                 "/api/v1/emails/**",
                                 "/api/v1/auth/**",
                                 "/api/v1/users/check-email",
+                                "/api/v1/users/check-nickname",
                                 "/api/v1/users/find-account",
                                 "/api/v1/users/reset-pw",
                                 "/swagger-ui/**",
@@ -64,12 +69,10 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-                // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 이전에 배치
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    // CORS 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -82,20 +85,11 @@ public class SecurityConfig {
                 "http://localhost:5173"
         ));
 
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-                "OPTIONS"
-        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
