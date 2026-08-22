@@ -30,9 +30,7 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId));
 
-        // 조회수 1 증가 (Dirty Checking으로 DB 자동 업데이트)
         product.increaseViewCount();
-
         return ProductDetailResponse.from(product);
     }
 
@@ -47,7 +45,11 @@ public class ProductService {
         List<RecentProductsResponse.RecentProductItem> items = recentViews.stream().map(rv -> {
             Product product = productRepository.findById(rv.getProductId()).orElse(null);
             String productName = (product != null) ? product.getName() : "알 수 없는 상품";
-            String imageUrl = (product != null) ? product.getImageUrl() : null;
+
+            // imageUrl 이 null일 경우 더미 이미지 세팅
+            String imageUrl = (product != null && product.getImageUrl() != null && !product.getImageUrl().isBlank())
+                    ? product.getImageUrl()
+                    : "https://via.placeholder.com/300x300.png?text=No+Image";
 
             List<String> dietaryTags = Collections.emptyList();
             String riskLevel = "SAFE";
@@ -88,20 +90,17 @@ public class ProductService {
                 .toList();
     }
 
-    // 5. 최근 본 상품 저장 및 viewedAt 최신화 (Upsert)
+    // 5. 최근 본 상품 저장 및 viewedAt 최신화
     @Transactional
     public void saveRecentProduct(Long userId, Long productId) {
-        // 유저 존재 여부 검증
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("존재하지 않는 유저입니다. id=" + userId);
         }
 
-        // 상품 존재 여부 검증
         if (!productRepository.existsById(productId)) {
             throw new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId);
         }
 
-        // 이미 본 상품이면 viewedAt만 현재 시간으로 갱신, 없으면 신규 생성
         recentViewRepository.findByUserIdAndProductId(userId, productId)
                 .ifPresentOrElse(
                         recentView -> recentView.setViewedAt(java.time.LocalDateTime.now()),
