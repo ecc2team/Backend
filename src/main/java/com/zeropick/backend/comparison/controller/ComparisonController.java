@@ -1,5 +1,6 @@
 package com.zeropick.backend.comparison.controller;
 
+import com.zeropick.backend.comparison.dto.ComparisonBoxToggleResponse;
 import com.zeropick.backend.comparison.dto.ProductCompareResponse;
 import com.zeropick.backend.comparison.service.ComparisonService;
 import com.zeropick.backend.global.exception.UnauthorizedException;
@@ -42,17 +43,47 @@ public class ComparisonController {
         throw new UnauthorizedException("유효하지 않은 인증 토큰 형태입니다.");
     }
 
-    // 내 비교함 목록 조회 (GET /api/v1/comparison-box)
+    // 1. 내 비교함 목록 조회 (GET /api/v1/comparison-box)
     @GetMapping("/comparison-box")
     public ResponseEntity<Map<String, Object>> getComparisonBox(Authentication authentication) {
         Long userId = extractUserId(authentication);
-
-        // Service의 getComparisonTable 메서드 호출
         ProductCompareResponse data = comparisonService.getComparisonTable(userId);
 
         return ResponseEntity.ok(Map.of(
                 "status", 200,
                 "message", "비교함 조회가 완료되었습니다.",
+                "data", data
+        ));
+    }
+
+    // 2. 비교함 상품 토글/담기 (POST /api/v1/comparison-box/{productId})
+    @PostMapping("/comparison-box/{productId}")
+    public ResponseEntity<Map<String, Object>> toggleComparisonBox(
+            Authentication authentication,
+            @PathVariable Long productId
+    ) {
+        Long userId = extractUserId(authentication);
+        ComparisonBoxToggleResponse data = comparisonService.toggleComparisonBox(userId, productId);
+
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "비교함 토글 처리가 완료되었습니다.",
+                "data", data
+        ));
+    }
+
+    // 3. 비교함 상품 삭제 (DELETE /api/v1/comparison-box/{productId})
+    @DeleteMapping("/comparison-box/{productId}")
+    public ResponseEntity<Map<String, Object>> deleteComparisonBoxProduct(
+            Authentication authentication,
+            @PathVariable Long productId
+    ) {
+        Long userId = extractUserId(authentication);
+        ComparisonBoxToggleResponse data = comparisonService.deleteComparisonBoxProduct(userId, productId);
+
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "message", "비교함 상품 삭제가 완료되었습니다.",
                 "data", data
         ));
     }
