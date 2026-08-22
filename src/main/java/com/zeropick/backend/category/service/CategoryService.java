@@ -87,11 +87,13 @@ public class CategoryService {
         Category category = findCategoryByCode(categoryCode);
         String sortKey = normalizeSort(sort);
 
+        String safeKeyword = (keyword == null) ? "" : keyword;
+
         Page<Product> productPage = SORT_POPULAR.equals(sortKey)
                 ? comparisonBoxRepository.findPopularProductsByCategoryAndKeyword(
-                category.getId(), keyword, PageRequest.of(page, size))
+                category.getId(), safeKeyword, PageRequest.of(page, size))
                 : productRepository.findByCategoryIdAndKeyword(
-                category.getId(), keyword, PageRequest.of(page, size, resolveSort(sortKey)));
+                category.getId(), safeKeyword, PageRequest.of(page, size, resolveSort(sortKey)));
 
         List<Long> productIds = productPage.getContent().stream().map(Product::getId).toList();
         Map<Long, List<String>> keyIngredientsByProductId = getKeyIngredientsByProductId(productIds);
