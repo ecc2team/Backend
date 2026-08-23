@@ -48,6 +48,6 @@ class ProductServiceTest {
 
         // then (결과 검증)
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).productName()).isEqualTo("제로콜라"); // 👈 name()에서 productName()으로 수정
+        assertThat(result.get(0).name()).isEqualTo("제로콜라"); // 👈 name()으로 변경
     }
 }
