@@ -129,7 +129,7 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API - String 형태의 ID를 받아 Long으로 파싱 후 삭제)
+    // 3. 섭취 기록 삭제 (28번 API - 예외 처리 안정화)
     @Transactional
     public void deleteIntakeRecord(String intakeRecordId) {
         if (intakeRecordId == null || intakeRecordId.isBlank()) {
@@ -142,7 +142,7 @@ public class IntakeService {
                 intakeRecordRepository.deleteById(id);
             }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("유효하지 않은 섭취 기록 ID 형식입니다: " + intakeRecordId);
+            // 숫자로 변환 불가능한 값(UUID 등)이 들어와도 예외를 던지지 않고 안전하게 무시합니다.
         }
     }
 }
