@@ -85,7 +85,7 @@ public class IntakeService {
                 totalCarbohydrate += (product.getCarbohydrate() != null ? product.getCarbohydrate().doubleValue() : 0.0) * qty;
 
                 TodayIntakeSummaryResponse.IntakeDetail detail = TodayIntakeSummaryResponse.IntakeDetail.builder()
-                        .intakeRecordId(record.getId())
+                        .intakeRecordId(record.getId()) // 👈 Long 타입에 맞게 수정
                         .intakeTime(record.getIntakeAt() != null ? record.getIntakeAt().format(DateTimeFormatter.ofPattern("HH:mm")) : null)
                         .productName(product.getName())
                         .servingSize("1개")
@@ -129,7 +129,7 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API - 예외 처리 안정화)
+    // 3. 섭취 기록 삭제 (28번 API - 예외 미발생 처리)
     @Transactional
     public void deleteIntakeRecord(String intakeRecordId) {
         if (intakeRecordId == null || intakeRecordId.isBlank()) {
@@ -142,7 +142,7 @@ public class IntakeService {
                 intakeRecordRepository.deleteById(id);
             }
         } catch (NumberFormatException e) {
-            // 숫자로 변환 불가능한 값(UUID 등)이 들어와도 예외를 던지지 않고 안전하게 무시합니다.
+            // 프론트엔드에서 숫자 이외의 문자열이 넘어와도 예외를 던지지 않고 무시 (화면 500 에러 방지)
         }
     }
 }
