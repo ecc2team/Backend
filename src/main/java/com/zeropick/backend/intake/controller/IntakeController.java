@@ -86,9 +86,10 @@ public class IntakeController {
     }
 
     // 28번 API: 섭취 기록 삭제 (DELETE /api/v1/intakes/{intakeRecordId})
+    // UUID 문자열 호환을 위해 @PathVariable 타입을 String으로 수용하도록 수정
     @DeleteMapping("/intakes/{intakeRecordId}")
     public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
-            @PathVariable Long intakeRecordId
+            @PathVariable String intakeRecordId
     ) {
         intakeService.deleteIntakeRecord(intakeRecordId);
         return ResponseEntity.ok(Map.of(

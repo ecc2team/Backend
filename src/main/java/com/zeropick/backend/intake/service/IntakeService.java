@@ -129,12 +129,20 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API)
+    // 3. 섭취 기록 삭제 (28번 API - String 형태의 ID를 받아 Long으로 파싱 후 삭제)
     @Transactional
-    public void deleteIntakeRecord(Long intakeRecordId) {
-        if (!intakeRecordRepository.existsById(intakeRecordId)) {
-            throw new IllegalArgumentException("존재하지 않는 섭취 기록입니다. id=" + intakeRecordId);
+    public void deleteIntakeRecord(String intakeRecordId) {
+        if (intakeRecordId == null || intakeRecordId.isBlank()) {
+            return;
         }
-        intakeRecordRepository.deleteById(intakeRecordId);
+
+        try {
+            Long id = Long.parseLong(intakeRecordId);
+            if (intakeRecordRepository.existsById(id)) {
+                intakeRecordRepository.deleteById(id);
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("유효하지 않은 섭취 기록 ID 형식입니다: " + intakeRecordId);
+        }
     }
 }
