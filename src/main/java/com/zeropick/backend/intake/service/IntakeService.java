@@ -85,7 +85,7 @@ public class IntakeService {
                 totalCarbohydrate += (product.getCarbohydrate() != null ? product.getCarbohydrate().doubleValue() : 0.0) * qty;
 
                 TodayIntakeSummaryResponse.IntakeDetail detail = TodayIntakeSummaryResponse.IntakeDetail.builder()
-                        .intakeRecordId(record.getId()) // 👈 Long 타입에 맞게 수정
+                        .intakeRecordId(record.getId())
                         .intakeTime(record.getIntakeAt() != null ? record.getIntakeAt().format(DateTimeFormatter.ofPattern("HH:mm")) : null)
                         .productName(product.getName())
                         .servingSize("1개")
@@ -129,7 +129,7 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API - 예외 미발생 처리)
+    // 3. 섭취 기록 삭제 (28번 API)
     @Transactional
     public void deleteIntakeRecord(String intakeRecordId) {
         if (intakeRecordId == null || intakeRecordId.isBlank()) {
@@ -138,11 +138,9 @@ public class IntakeService {
 
         try {
             Long id = Long.parseLong(intakeRecordId);
-            if (intakeRecordRepository.existsById(id)) {
-                intakeRecordRepository.deleteById(id);
-            }
+            intakeRecordRepository.deleteById(id);
         } catch (NumberFormatException e) {
-            // 프론트엔드에서 숫자 이외의 문자열이 넘어와도 예외를 던지지 않고 무시 (화면 500 에러 방지)
+            // 프론트엔드가 UUID 같은 비숫자 문자열을 전달하는 경우에도 에러 없이 정상 처리
         }
     }
 }
