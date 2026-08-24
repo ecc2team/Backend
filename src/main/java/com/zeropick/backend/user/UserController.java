@@ -62,6 +62,12 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("프로필 조회가 성공적으로 완료되었습니다.", response));
     }
 
+    @GetMapping("/me/nutrition-target")
+    public ResponseEntity<ApiResponse<NutritionTargetResponse>> getNutritionTarget(@AuthenticationPrincipal User user) {
+        NutritionTargetResponse response = userService.getNutritionTarget(user);
+        return ResponseEntity.ok(ApiResponse.success("개인 맞춤 권장 섭취량 조회가 완료되었습니다.", response));
+    }
+
     @PutMapping("/me/preferences")
     public ResponseEntity<ApiResponse<UserPreferencesResponse>> updatePreferences(
             @AuthenticationPrincipal User user,
