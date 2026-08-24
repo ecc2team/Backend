@@ -19,7 +19,6 @@ public class IntakeController {
 
     private final IntakeService intakeService;
 
-    // 인증 토큰에서 userId 추출 (User 객체, Long, String 타입 모두 대응)
     private Long extractUserId(Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new UnauthorizedException("인증 정보가 존재하지 않습니다.");
@@ -50,13 +49,11 @@ public class IntakeController {
     ) {
         Long userId = extractUserId(authentication);
 
-        // productId 세팅 (JSON Body 대응)
         Long targetProductId = productId;
         if (targetProductId == null && body != null && body.get("productId") != null) {
             targetProductId = Long.valueOf(body.get("productId").toString());
         }
 
-        // quantity 세팅 (JSON Body 대응)
         BigDecimal targetQuantity = quantity;
         if (targetQuantity == null && body != null && body.get("quantity") != null) {
             targetQuantity = new BigDecimal(body.get("quantity").toString());
@@ -85,8 +82,7 @@ public class IntakeController {
         ));
     }
 
-    // 28번 API: 섭취 기록 삭제
-    // /intake/records/{id} 및 /intakes/{id} 두 경로 모두 호환되도록 지정
+    // 28번 API: 섭취 기록 삭제 (두 종류의 삭제 URL 경로 호환)
     @DeleteMapping({"/intake/records/{intakeRecordId}", "/intakes/{intakeRecordId}"})
     public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
             @PathVariable("intakeRecordId") String intakeRecordId

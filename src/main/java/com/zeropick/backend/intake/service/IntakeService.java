@@ -31,7 +31,7 @@ public class IntakeService {
     private final UserRepository userRepository;
     private final NutritionCalculator nutritionCalculator;
 
-    // 1. 오늘 먹은 제품 기록 추가 (20번 API)
+    // 1. 오늘 먹은 제품 기록 추가 (20번 API - 중복 허용 및 매번 새 기록 저장)
     @Transactional
     public void addIntakeRecord(Long userId, Long productId, BigDecimal quantity) {
         if (productId == null) {
@@ -129,7 +129,7 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API)
+    // 3. 섭취 기록 삭제 (28번 API - 예외 미발생 및 데이터 삭제 처리)
     @Transactional
     public void deleteIntakeRecord(String intakeRecordId) {
         if (intakeRecordId == null || intakeRecordId.isBlank()) {
@@ -138,9 +138,11 @@ public class IntakeService {
 
         try {
             Long id = Long.parseLong(intakeRecordId);
-            intakeRecordRepository.deleteById(id);
+            if (intakeRecordRepository.existsById(id)) {
+                intakeRecordRepository.deleteById(id);
+            }
         } catch (NumberFormatException e) {
-            // 프론트엔드가 UUID 같은 비숫자 문자열을 전달하는 경우에도 에러 없이 정상 처리
+            // 프론트엔드가 숫자 형태가 아닌 ID(UUID 등)를 보내더라도 서버 오류 없이 무시
         }
     }
 }
