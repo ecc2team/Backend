@@ -14,6 +14,7 @@ import com.zeropick.backend.user.repository.UserAllergyRepository;
 import com.zeropick.backend.user.repository.UserPreferredCategoryRepository;
 import com.zeropick.backend.user.repository.UserPreferredIngredientRepository;
 import com.zeropick.backend.user.repository.UserRepository;
+import com.zeropick.backend.user.util.NutritionCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class UserService {
     private final UserPreferredCategoryRepository userPreferredCategoryRepository;
     private final IngredientRepository ingredientRepository;
     private final CategoryRepository categoryRepository;
+    private final NutritionCalculator nutritionCalculator;
 
     public EmailCheckResponse checkEmail(String email){
         boolean isAvailable = !userRepository.existsByEmailAndDeletedAtIsNull(email);
@@ -104,6 +106,25 @@ public class UserService {
         );
     }
 
+    // 키/몸무게/나이/성별/활동량 기반 개인 맞춤 권장 섭취량 조회
+    public NutritionTargetResponse getNutritionTarget(User user) {
+        NutritionCalculator.NutrientTarget target = nutritionCalculator.calculate(user);
+
+        boolean personalized = user.getHeight() != null
+                && user.getWeight() != null
+                && user.getBirthDate() != null;
+
+        return new NutritionTargetResponse(
+                target.targetCalories(),
+                target.targetCarbohydrate(),
+                target.targetProtein(),
+                target.targetSaturatedFat(),
+                target.targetSugar(),
+                target.targetSodium(),
+                personalized
+        );
+    }
+
     // 마이페이지 취향 수정: 기존 설정을 전부 지우고 새로 들어온 값으로 통째로 갈아끼운다.
     @Transactional
     public UserPreferencesResponse updatePreferences(User user, UserPreferencesRequest request) {
@@ -145,4 +166,6 @@ public class UserService {
 
         return new UserPreferencesResponse(realUser.getId(), OffsetDateTime.now());
     }
+
+
 }
