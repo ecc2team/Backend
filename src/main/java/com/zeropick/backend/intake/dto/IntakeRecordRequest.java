@@ -9,5 +9,5 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class IntakeRecordRequest {
     private Long productId;     // 기록할 상품 ID
-    private BigDecimal quantity; // 섭취 수량 (기본값 1)
+    private BigDecimal quantity; // 섭취 수량
 }
