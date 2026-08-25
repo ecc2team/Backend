@@ -3,9 +3,11 @@ package com.zeropick.backend.intake.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @NoArgsConstructor
 public class IntakeRecordRequest {
-    private Long productId; // 기록할 상품 ID
-    private Integer amount;  // 섭취량/수량 (필요 시 필드 추가)
+    private Long productId;     // 기록할 상품 ID
+    private BigDecimal quantity; // 섭취 수량 (기본값 1)
 }
