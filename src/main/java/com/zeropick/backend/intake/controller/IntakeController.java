@@ -1,6 +1,7 @@
 package com.zeropick.backend.intake.controller;
 
 import com.zeropick.backend.global.exception.UnauthorizedException;
+import com.zeropick.backend.intake.dto.IntakeRecordRequest;
 import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
 import com.zeropick.backend.user.entity.User;
@@ -43,21 +44,17 @@ public class IntakeController {
     @PostMapping("/intake/today")
     public ResponseEntity<Map<String, Object>> addIntakeRecord(
             Authentication authentication,
-            @RequestBody(required = false) Map<String, Object> body,
+            @RequestBody(required = false) IntakeRecordRequest requestDto,
             @RequestParam(required = false) Long productId,
             @RequestParam(required = false) BigDecimal quantity
     ) {
         Long userId = extractUserId(authentication);
 
-        Long targetProductId = productId;
-        if (targetProductId == null && body != null && body.get("productId") != null) {
-            targetProductId = Long.valueOf(body.get("productId").toString());
-        }
-
-        BigDecimal targetQuantity = quantity;
-        if (targetQuantity == null && body != null && body.get("quantity") != null) {
-            targetQuantity = new BigDecimal(body.get("quantity").toString());
-        }
+        // RequestBody(DTO) 우선 추출, 없을 경우 QueryParam에서 추출
+        Long targetProductId = (requestDto != null && requestDto.getProductId() != null)
+                ? requestDto.getProductId() : productId;
+        BigDecimal targetQuantity = (requestDto != null && requestDto.getQuantity() != null)
+                ? requestDto.getQuantity() : quantity;
 
         intakeService.addIntakeRecord(userId, targetProductId, targetQuantity);
 
@@ -82,8 +79,8 @@ public class IntakeController {
         ));
     }
 
-    // 28번 API: 섭취 기록 삭제 (두 종류의 삭제 URL 경로 호환)
-    @DeleteMapping({"/intake/records/{intakeRecordId}", "/intakes/{intakeRecordId}"})
+    // 28번 API: 섭취 기록 삭제 (명세서 표준 단일 경로로 통일)
+    @DeleteMapping("/intake/records/{intakeRecordId}")
     public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
             @PathVariable("intakeRecordId") String intakeRecordId
     ) {
