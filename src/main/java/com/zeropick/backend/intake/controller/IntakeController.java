@@ -1,6 +1,8 @@
 package com.zeropick.backend.intake.controller;
 
 import com.zeropick.backend.global.exception.UnauthorizedException;
+import com.zeropick.backend.global.response.ApiResponse;
+import com.zeropick.backend.intake.dto.IntakeCreateRequest;
 import com.zeropick.backend.intake.dto.TodayIntakeSummaryResponse;
 import com.zeropick.backend.intake.service.IntakeService;
 import com.zeropick.backend.user.entity.User;
@@ -10,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -39,58 +40,40 @@ public class IntakeController {
         }
     }
 
-    // 20번 API: 오늘 먹은 제품 기록하기 (POST /api/v1/intake/today)
-    @PostMapping("/intake/today")
-    public ResponseEntity<Map<String, Object>> addIntakeRecord(
+    // 오늘 먹은 제품 기록하기
+    @PostMapping("/intakes")
+    public ResponseEntity<ApiResponse<Void>> addIntakeRecord(
             Authentication authentication,
-            @RequestBody(required = false) Map<String, Object> body,
-            @RequestParam(required = false) Long productId,
-            @RequestParam(required = false) BigDecimal quantity
+            @RequestBody IntakeCreateRequest request
     ) {
         Long userId = extractUserId(authentication);
 
-        Long targetProductId = productId;
-        if (targetProductId == null && body != null && body.get("productId") != null) {
-            targetProductId = Long.valueOf(body.get("productId").toString());
-        }
+        BigDecimal quantity = request.quantity() != null
+                ? BigDecimal.valueOf(request.quantity())
+                : BigDecimal.ONE;
 
-        BigDecimal targetQuantity = quantity;
-        if (targetQuantity == null && body != null && body.get("quantity") != null) {
-            targetQuantity = new BigDecimal(body.get("quantity").toString());
-        }
+        intakeService.addIntakeRecord(userId, request.productId(), quantity);
 
-        intakeService.addIntakeRecord(userId, targetProductId, targetQuantity);
-
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "섭취 기록이 성공적으로 추가되었습니다."
-        ));
+        return ResponseEntity.ok(ApiResponse.success("섭취 기록이 성공적으로 추가되었습니다.", null));
     }
 
-    // 21번 API: 오늘의 안전 섭취량 게이지 조회 (GET /api/v1/intake/today)
-    @GetMapping("/intake/today")
-    public ResponseEntity<Map<String, Object>> getTodayIntakeSummary(
+    // 오늘의 안전 섭취량 게이지 조회
+    @GetMapping("/intakes/today")
+    public ResponseEntity<ApiResponse<TodayIntakeSummaryResponse>> getTodayIntakeSummary(
             Authentication authentication
     ) {
         Long userId = extractUserId(authentication);
         TodayIntakeSummaryResponse data = intakeService.getTodayIntakeSummary(userId);
 
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "오늘의 섭취량 조회가 완료되었습니다.",
-                "data", data
-        ));
+        return ResponseEntity.ok(ApiResponse.success("오늘의 섭취량 조회가 완료되었습니다.", data));
     }
 
-    // 28번 API: 섭취 기록 삭제 (두 종류의 삭제 URL 경로 호환)
-    @DeleteMapping({"/intake/records/{intakeRecordId}", "/intakes/{intakeRecordId}"})
-    public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
-            @PathVariable("intakeRecordId") String intakeRecordId
+    // 섭취 기록 삭제
+    @DeleteMapping("/intakes/{intakeRecordId}")
+    public ResponseEntity<ApiResponse<Void>> deleteIntakeRecord(
+            @PathVariable("intakeRecordId") Long intakeRecordId
     ) {
         intakeService.deleteIntakeRecord(intakeRecordId);
-        return ResponseEntity.ok(Map.of(
-                "status", 200,
-                "message", "섭취 기록이 성공적으로 삭제되었습니다."
-        ));
+        return ResponseEntity.ok(ApiResponse.success("섭취 기록이 성공적으로 삭제되었습니다.", null));
     }
 }

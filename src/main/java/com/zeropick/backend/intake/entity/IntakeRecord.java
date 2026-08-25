@@ -29,7 +29,7 @@ public class IntakeRecord {
     @Column(nullable = false, precision = 3, scale = 1)
     private BigDecimal quantity;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     public IntakeRecord(Long userId, Long productId, OffsetDateTime intakeAt, BigDecimal quantity) {

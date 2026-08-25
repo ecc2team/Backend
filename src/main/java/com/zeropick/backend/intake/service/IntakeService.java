@@ -20,6 +20,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class IntakeService {
     private final UserRepository userRepository;
     private final NutritionCalculator nutritionCalculator;
 
-    // 1. 오늘 먹은 제품 기록 추가 (20번 API - 중복 허용 및 매번 새 기록 저장)
+    // 1. 오늘 먹은 제품 기록 추가
     @Transactional
     public void addIntakeRecord(Long userId, Long productId, BigDecimal quantity) {
         if (productId == null) {
@@ -42,12 +44,12 @@ public class IntakeService {
             throw new IllegalArgumentException("존재하지 않는 상품입니다. id=" + productId);
         }
 
-        BigDecimal actualQuantity = (quantity != null) ? quantity : BigDecimal.valueOf(1.0);
+        BigDecimal actualQuantity = (quantity != null) ? quantity : BigDecimal.ONE;
         IntakeRecord record = new IntakeRecord(userId, productId, OffsetDateTime.now(), actualQuantity);
         intakeRecordRepository.save(record);
     }
 
-    // 2. 오늘의 섭취량 및 목록 조회 (21번 API)
+    // 2. 오늘의 섭취량 및 목록 조회
     public TodayIntakeSummaryResponse getTodayIntakeSummary(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -61,6 +63,14 @@ public class IntakeService {
 
         List<IntakeRecord> todayRecords = intakeRecordRepository.findByUserIdAndIntakeAtBetween(userId, startOfDay, endOfDay);
 
+        List<Long> productIds = todayRecords.stream()
+                .map(IntakeRecord::getProductId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Long, Product> productMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
         int totalCalories = 0;
         double totalSugar = 0.0;
         double totalSodium = 0.0;
@@ -71,7 +81,8 @@ public class IntakeService {
         List<TodayIntakeSummaryResponse.IntakeDetail> intakeDetails = new ArrayList<>();
 
         for (IntakeRecord record : todayRecords) {
-            Product product = productRepository.findById(record.getProductId()).orElse(null);
+            Product product = productMap.get(record.getProductId());
+
             if (product != null) {
                 double qty = record.getQuantity() != null ? record.getQuantity().doubleValue() : 1.0;
 
@@ -129,20 +140,12 @@ public class IntakeService {
                 .build();
     }
 
-    // 3. 섭취 기록 삭제 (28번 API - 예외 미발생 및 데이터 삭제 처리)
+    // 3. 섭취 기록 삭제
     @Transactional
-    public void deleteIntakeRecord(String intakeRecordId) {
-        if (intakeRecordId == null || intakeRecordId.isBlank()) {
+    public void deleteIntakeRecord(Long intakeRecordId) {
+        if (intakeRecordId == null) {
             return;
         }
-
-        try {
-            Long id = Long.parseLong(intakeRecordId);
-            if (intakeRecordRepository.existsById(id)) {
-                intakeRecordRepository.deleteById(id);
-            }
-        } catch (NumberFormatException e) {
-            // 프론트엔드가 숫자 형태가 아닌 ID(UUID 등)를 보내더라도 서버 오류 없이 무시
-        }
+        intakeRecordRepository.findById(intakeRecordId).ifPresent(intakeRecordRepository::delete);
     }
 }
