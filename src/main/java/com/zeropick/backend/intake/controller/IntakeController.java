@@ -79,7 +79,7 @@ public class IntakeController {
         ));
     }
 
-    // 28번 API: 섭취 기록 삭제 (명세서 표준 단일 경로로 통일)
+    // 28번 API: 섭취 기록 삭제 (명세서 표준 단일 경로 고정)
     @DeleteMapping("/intake/records/{intakeRecordId}")
     public ResponseEntity<Map<String, Object>> deleteIntakeRecord(
             @PathVariable("intakeRecordId") String intakeRecordId
