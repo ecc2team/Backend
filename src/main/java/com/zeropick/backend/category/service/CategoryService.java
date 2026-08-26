@@ -172,17 +172,18 @@ public class CategoryService {
                 rank,
                 product.getId(),
                 product.getName(),
+                product.getImageUrl(),
                 product.getScore() != null ? product.getScore().intValue() : null,
                 product.getWarningAdditive() != null ? product.getWarningAdditive() : false,
                 product.getViewCount()
         );
     }
 
-    // CategoryService.java 내부
     private CategoryProductResponse toProductResponse(Product product, List<String> keyIngredients) {
         return new CategoryProductResponse(
                 product.getId(),
                 product.getName(),
+                product.getImageUrl(),
                 product.getScore() != null ? product.getScore().intValue() : null,
                 product.getCalories(),
                 product.getSugar() != null ? product.getSugar().doubleValue() : 0.0,
