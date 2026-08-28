@@ -45,7 +45,7 @@ public class IntakeService {
         }
 
         BigDecimal actualQuantity = (quantity != null) ? quantity : BigDecimal.ONE;
-        IntakeRecord record = new IntakeRecord(userId, productId, OffsetDateTime.now(), actualQuantity);
+        IntakeRecord record = new IntakeRecord(userId, productId, OffsetDateTime.now(ZoneId.of("Asia/Seoul")), actualQuantity);
         intakeRecordRepository.save(record);
     }
 
@@ -97,7 +97,9 @@ public class IntakeService {
 
                 TodayIntakeSummaryResponse.IntakeDetail detail = TodayIntakeSummaryResponse.IntakeDetail.builder()
                         .intakeRecordId(record.getId())
-                        .intakeTime(record.getIntakeAt() != null ? record.getIntakeAt().format(DateTimeFormatter.ofPattern("HH:mm")) : null)
+                        .intakeTime(record.getIntakeAt() != null
+                                ? record.getIntakeAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("HH:mm"))
+                                : null)
                         .productName(product.getName())
                         .servingSize("1개")
                         .calories(itemCalories)
