@@ -3,12 +3,14 @@ package com.zeropick.backend.product.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recent_view")
 @Getter
+@Setter
 @NoArgsConstructor
 public class RecentView {
 
@@ -29,5 +31,11 @@ public class RecentView {
         this.userId = userId;
         this.productId = productId;
         this.viewedAt = LocalDateTime.now();
+    }
+
+    public RecentView(Long userId, Long productId, LocalDateTime viewedAt) {
+        this.userId = userId;
+        this.productId = productId;
+        this.viewedAt = viewedAt;
     }
 }

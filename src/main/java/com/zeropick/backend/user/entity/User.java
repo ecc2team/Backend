@@ -1,0 +1,102 @@
+package com.zeropick.backend.user.entity;
+
+import com.zeropick.backend.user.enums.ActivityLevel;
+import com.zeropick.backend.user.enums.Gender;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import com.zeropick.backend.user.enums.AuthProvider;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
+@Entity
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String email;
+
+    @Column(length = 100)
+    private String password; // 소셜 로그인 유저는 null
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AuthProvider provider;
+
+    @Column(nullable = false, length = 30)
+    private String nickname;
+
+    @Column(name= "refresh_token", length = 500)
+    private String refreshToken;
+
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private OffsetDateTime deletedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
+
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(precision = 5, scale = 1)
+    private BigDecimal height;
+
+    @Column(precision = 5, scale = 1)
+    private BigDecimal weight;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_level", length = 30)
+    private ActivityLevel activityLevel;
+
+    @Builder
+    public User(String email, String password, String nickname, AuthProvider provider,
+                Gender gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, ActivityLevel activityLevel) {
+        this.email = email;
+        this.password = password;
+        this.provider = provider;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.height = height;
+        this.weight = weight;
+        this.activityLevel = activityLevel;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void withdraw() {
+        this.deletedAt = OffsetDateTime.now();
+        this.refreshToken = null; // 탈퇴 시 refreshToken 재발급 경로 막아둠
+    }
+
+    public void updateProfile(Gender gender, LocalDate birthDate, BigDecimal height, BigDecimal weight, ActivityLevel activityLevel) {
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.height = height;
+        this.weight = weight;
+        this.activityLevel = activityLevel;
+    }
+}

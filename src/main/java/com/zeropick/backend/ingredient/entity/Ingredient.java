@@ -20,7 +20,7 @@ public class Ingredient {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 20)
+    @Column(name="ingredient_type", nullable = false, length = 20)
     private String type;
 
     @Column(name = "risk_level", nullable = false, length = 20)

@@ -1,0 +1,1 @@
+ALTER TABLE intake_record DROP COLUMN intake_date;

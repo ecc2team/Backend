@@ -1,41 +1,33 @@
 package com.zeropick.backend.comparison.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductCompareResponse {
 
-    private Integer comparedCount;
-    private List<ComparisonItem> comparisonTable;
+    private Integer savedCount;
+    private List<ComparisonItem> products;
 
     @Getter
+    @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class ComparisonItem {
         private Long productId;
         private String productName;
-        private Integer grade;
-        private Boolean warningAdditive;
-        private Nutrition nutrition;
-        private KeyIngredients keyIngredients;
-        private List<String> allergies;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class Nutrition {
-        private Integer calories;
-        private Double sugar;
-        private Double sodium;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class KeyIngredients {
-        private List<String> sweeteners;
-        private List<String> additives;
+        private String imageUrl;
+        private String categoryCode; // <- 추가된 카테고리 코드 필드
+        private List<String> dietaryTags;
+        private Integer score;
+        private OffsetDateTime addedAt;
     }
 }

@@ -16,6 +16,7 @@ public class JwtUtil {
 
     private final SecretKey key;
     private final long expirationMs;
+    private static final long REFRESH_TOKEN_VALIDITY = 1000L * 60 * 60 * 24 * 14;    // 14일
 
     // 1. 비밀키 준비: yml의 일반 문자열(secret) -> 자바 전용 SecretKey 객체로 변환
     public JwtUtil(
@@ -26,34 +27,47 @@ public class JwtUtil {
         this.expirationMs = expirationMs;
     }
 
-    // 2. 토큰 생성 (generateToken)
+    // 2. 액세스 토큰 생성
     public String generateToken(String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(email)         // 식별자(이메일) 넣기
-                .issuedAt(now)          // 발급 시간
-                .expiration(expiry)     // 만료 시간
-                .signWith(key)          // 서버 비밀키로 Signature
-                .compact();             // 최종 "aaaaa.bbbbb.ccccc" 문자열 반환
+                .subject(email)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(key)
+                .compact();
     }
 
-    // 3. 토큰 해독 및 검증 (parseClaims)
+    // 3. 리프레시 토큰 생성
+    public String generateRefreshToken(String email) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + REFRESH_TOKEN_VALIDITY);
+
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(key)
+                .compact();
+    }
+
+    // 4. 토큰 해독 및 검증
     public Claims parseClaims(String token) {
         return Jwts.parser()
-                .verifyWith(key)            // 서버 비밀키 세팅
+                .verifyWith(key)
                 .build()
-                .parseSignedClaims(token)   // Signature 검증
-                .getPayload();              // 검증 통과 시 Claims 반환
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    // 4. 이메일 추출
+    // 5. 이메일 추출
     public String extractEmail(String token) {
         return parseClaims(token).getSubject();
     }
 
-    // 5. 유효성 검사
+    // 6. 유효성 검사
     public boolean isValid(String token) {
         try {
             parseClaims(token);
@@ -62,6 +76,4 @@ public class JwtUtil {
             return false;
         }
     }
-
-
 }
