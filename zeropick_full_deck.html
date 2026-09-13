@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeroPick 발표자료 — 전체 19슬라이드</title>
+<link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet">
+<style>
+  :root{
+    --violet-900:#3B1E7A;
+    --violet-700:#6D28D9;
+    --violet-600:#7C3AED;
+    --violet-500:#8B5CF6;
+    --violet-400:#A78BFA;
+    --lavender-400:#C4B5FD;
+    --lavender-300:#D6CBFB;
+    --lavender-200:#DDD6FE;
+    --lavender-100:#EDE9FE;
+    --lavender-50:#F7F5FC;
+    --ink:#211C34;
+    --gray-700:#4B4560;
+    --gray-600:#5B5570;
+    --gray-500:#726C87;
+    --gray-400:#9C97AE;
+    --line:#EBE8F3;
+    --white:#FFFFFF;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-snap-type:y proximity; }
+
+  body{
+    font-family:'SUIT', -apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    background:#F7F6FA;
+    color:var(--ink);
+    word-break:keep-all;
+    line-break:strict;
+  }
+
+  .slide-stage{
+    min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 16px;
+    scroll-snap-align:center;
+  }
+
+  .stage-label{
+    width:min(92vw, calc(92vh * 16 / 9));
+    font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--gray-400);
+    margin-bottom:10px; padding-left:2px;
+  }
+
+  .slide{
+    position:relative;
+    width:min(92vw, calc(92vh * 16 / 9));
+    aspect-ratio:16/9;
+    background:var(--white);
+    border-radius:.7cqw;
+    overflow:hidden;
+    border:1px solid var(--line);
+    box-shadow:0 24px 60px -34px rgba(76,29,149,.28);
+    container-type:inline-size;
+  }
+
+  .slide-pad{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    padding:4.4cqw 5cqw 6.5cqw 5cqw;
+    z-index:1;
+  }
+
+  .eyebrow{
+    font-size:1.3cqw; font-weight:800; color:var(--violet-600);
+    letter-spacing:.06em; text-transform:lowercase;
+    margin-bottom:1.7cqw;
+    flex-shrink:0;
+  }
+
+  .slide-footer{
+    position:absolute; left:0; right:0; bottom:2.6cqw;
+    padding:0 5cqw;
+    display:flex; align-items:center; justify-content:space-between;
+    z-index:2;
+  }
+  .brand-mark{ display:inline-flex; align-items:center; gap:.6cqw; }
+  .brand-mark svg{ width:1.7cqw; height:1.7cqw; flex-shrink:0; }
+  .brand-mark span{ font-size:1.15cqw; font-weight:700; color:var(--gray-500); letter-spacing:.01em; }
+  .page-num{ font-size:1.1cqw; font-weight:600; color:var(--gray-400); font-variant-numeric:tabular-nums; }
+
+  .chk circle{ fill:var(--lavender-100); }
+  .chk path{ stroke:var(--violet-700); }
+
+  .title-main{ font-size:3.4cqw; font-weight:800; letter-spacing:-.02em; color:var(--ink); margin-bottom:1.6cqw; flex-shrink:0; }
+  .title-sub{ font-size:2.3cqw; font-weight:800; letter-spacing:-.02em; color:var(--ink); margin-bottom:1.8cqw; flex-shrink:0; }
+
+  .quote-line{
+    font-size:1.55cqw; font-weight:700; color:var(--violet-700);
+    border-left:.3cqw solid var(--lavender-300); padding-left:1.3cqw;
+    margin-bottom:2.2cqw; line-height:1.55; flex-shrink:0;
+  }
+
+  /* ---------- bullet list w/ checkmark, reused across many slides ---------- */
+  .chk-list{ list-style:none; display:flex; flex-direction:column; gap:1.1cqw; }
+  .chk-list li{ display:flex; align-items:flex-start; gap:.75cqw; }
+  .chk-list li svg{ flex-shrink:0; width:1.35cqw; height:1.35cqw; margin-top:.28cqw; }
+  .chk-list li > span{ flex:1 1 auto; min-width:0; font-size:1.2cqw; line-height:1.6; color:var(--gray-700); font-weight:500; }
+  .chk-list li > span b{ color:var(--violet-700); font-weight:800; }
+
+  /* ---------- generic link badge ---------- */
+  .link-row{ display:flex; gap:1cqw; margin-top:1.6cqw; flex-wrap:wrap; flex-shrink:0; }
+  .link-badge{ display:inline-flex; align-items:center; gap:.5cqw; background:var(--lavender-50); border:1px solid var(--lavender-200); border-radius:999px; padding:.6cqw 1.3cqw; font-size:1cqw; color:var(--violet-700); font-weight:700; }
+  .link-badge svg{ width:1.05cqw; height:1.05cqw; flex-shrink:0; }
+
+  /* =========================================================
+     SLIDE 01 — 표지
+     ========================================================= */
+  .slide.cover{ background:radial-gradient(circle at 12% 12%, #F8F5FF 0%, #FFFFFF 42%); }
+  .cover-decor{ position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .cover-decor span{ position:absolute; border-radius:50%; }
+  .cover-decor .c1{ width:32cqw;height:32cqw; right:-9cqw; top:-11cqw; background:radial-gradient(circle at 35% 35%, var(--lavender-100), transparent 72%); }
+  .cover-decor .c2{ width:26cqw;height:26cqw; left:-7cqw; bottom:-9cqw; background:radial-gradient(circle at 60% 60%, var(--lavender-50), transparent 72%); }
+  .cover-wrap{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 8cqw; }
+  .cover-badge{ display:inline-flex; align-items:center; gap:.5cqw; font-size:1.05cqw; font-weight:800; color:var(--violet-700); background:var(--lavender-100); border:1px solid var(--lavender-200); padding:.55cqw 1.4cqw; border-radius:999px; letter-spacing:.08em; margin-bottom:2.3cqw; text-transform:uppercase; }
+  .cover-title{ font-size:8cqw; font-weight:800; letter-spacing:-.03em; line-height:1; background:linear-gradient(100deg, var(--violet-700), var(--violet-400)); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:2cqw; }
+  .cover-sub{ font-size:1.7cqw; font-weight:600; color:var(--gray-700); margin-bottom:4cqw; }
+  .cover-sub b{ color:var(--violet-700); }
+  .cover-credit{ font-size:1.2cqw; font-weight:700; color:var(--gray-500); margin-bottom:.7cqw; }
+  .cover-link{ font-size:1.05cqw; color:var(--gray-400); font-weight:600; letter-spacing:.02em; }
+
+  /* =========================================================
+     SLIDE 02 — 팀 소개
+     ========================================================= */
+  .lede{ font-size:1.5cqw; line-height:1.65; color:var(--gray-700); font-weight:500; max-width:88%; margin-bottom:2.6cqw; flex-shrink:0; }
+  .lede b{ color:var(--violet-700); font-weight:800; }
+  .team-row{ flex:1 1 auto; display:flex; gap:1.6cqw; align-items:stretch; }
+  .team-card{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; background:var(--white); border:1px solid var(--line); border-radius:1cqw; padding:2.3cqw 1.7cqw 2cqw; }
+  .avatar-circle{ width:5.3cqw; height:5.3cqw; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--lavender-100); margin-bottom:1.1cqw; }
+  .avatar-circle svg{ width:2.4cqw; height:2.4cqw; }
+  .member-name{ font-size:1.75cqw; font-weight:800; color:var(--ink); margin-bottom:.7cqw; }
+  .role-badge{ display:inline-flex; align-items:center; gap:.45cqw; font-size:1.12cqw; font-weight:700; padding:.45cqw 1.1cqw; border-radius:999px; margin-bottom:1.5cqw; }
+  .role-badge svg{ width:1.15cqw; height:1.15cqw; }
+  .role-backend{ background:var(--violet-600); color:#fff; }
+  .role-frontend{ background:var(--white); color:var(--violet-700); border:1.4px solid var(--lavender-400); }
+  .card-divider{ width:100%; height:1px; background:var(--line); margin-bottom:1.4cqw; }
+  .duty-list{ list-style:none; width:100%; text-align:left; display:flex; flex-direction:column; gap:.65cqw; }
+  .duty-list li{ display:flex; align-items:center; gap:.6cqw; font-size:1.22cqw; color:var(--gray-700); font-weight:500; }
+  .duty-list li svg{ width:1.3cqw; height:1.3cqw; flex-shrink:0; }
+
+  /* =========================================================
+     SLIDE 03 — 기획 배경
+     ========================================================= */
+  .core-message{ font-size:3.4cqw; font-weight:800; line-height:1.4; letter-spacing:-.02em; color:var(--ink); margin-bottom:2.2cqw; flex-shrink:0; }
+  .core-message .accent{ color:var(--violet-700); text-decoration:underline; text-decoration-color:var(--lavender-400); text-decoration-thickness:.28cqw; text-underline-offset:.45cqw; }
+  .flow-wrap{ flex:1 1 auto; display:flex; flex-direction:column; justify-content:space-between; gap:1.2cqw; }
+  .problem-cards{ display:flex; gap:1.6cqw; }
+  .problem-card{ flex:1; background:var(--white); border:1px solid var(--line); border-radius:1cqw; padding:1.8cqw 1.6cqw; display:flex; flex-direction:column; align-items:flex-start; gap:.95cqw; }
+  .num-badge{ flex-shrink:0; width:2.15cqw; height:2.15cqw; border-radius:50%; border:1.8px solid var(--lavender-400); display:flex; align-items:center; justify-content:center; font-size:1.03cqw; font-weight:800; color:var(--violet-700); }
+  .problem-card p{ font-size:1.22cqw; line-height:1.55; color:var(--gray-700); font-weight:500; }
+  .flow-connector{ display:flex; flex-direction:column; align-items:center; gap:.3cqw; }
+  .flow-connector .label{ font-size:1.42cqw; font-weight:800; color:var(--violet-700); letter-spacing:-.01em; }
+  .flow-connector svg{ width:2cqw; height:2cqw; color:var(--lavender-400); }
+  .solution-bar{ display:flex; align-items:center; gap:1.6cqw; background:var(--lavender-50); border:1.5px solid var(--lavender-200); border-radius:1cqw; padding:2cqw 2.35cqw; }
+  .solution-bar .badge-icon{ flex-shrink:0; width:3.05cqw; height:3.05cqw; }
+  .solution-bar p{ font-size:1.42cqw; font-weight:600; color:var(--ink); line-height:1.6; }
+  .solution-bar .sep{ color:var(--lavender-400); font-weight:800; margin:0 .1cqw; }
+  .solution-bar .brand-pill-final{ display:inline-flex; align-items:center; background:var(--violet-600); color:#fff; font-size:1.27cqw; font-weight:800; padding:.4cqw 1.05cqw; border-radius:999px; margin-left:.9cqw; }
+
+  /* =========================================================
+     SLIDE 04 — 서비스 개요
+     ========================================================= */
+  .feature-grid{ flex:1 1 auto; display:grid; grid-template-columns:repeat(3, 1fr); grid-template-rows:repeat(2, 1fr); gap:1.4cqw; }
+  .feature-card{ background:var(--white); border:1px solid var(--line); border-radius:1cqw; padding:1.9cqw 1.8cqw; display:flex; flex-direction:column; }
+  .feature-icon-circle{ width:3.4cqw; height:3.4cqw; border-radius:50%; background:var(--lavender-100); display:flex; align-items:center; justify-content:center; margin-bottom:1.2cqw; }
+  .feature-icon-circle svg{ width:1.8cqw; height:1.8cqw; color:var(--violet-700); }
+  .feature-title{ font-size:1.55cqw; font-weight:800; color:var(--ink); margin-bottom:.6cqw; }
+  .feature-desc{ font-size:1.15cqw; line-height:1.55; color:var(--gray-600); font-weight:500; }
+
+  /* =========================================================
+     SLIDE 05 — 시스템 아키텍처
+     ========================================================= */
+  .arch-diagram{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+  .arch-node{ background:#fff; border:1.4px solid var(--line); border-radius:.75cqw; padding:.7cqw 1.8cqw; font-weight:700; font-size:1.15cqw; color:var(--ink); text-align:center; }
+  .arch-node.compact{ font-size:.98cqw; padding:.55cqw 1.3cqw; }
+  .arch-node small{ display:block; font-size:.8cqw; font-weight:500; color:var(--gray-500); margin-top:.2cqw; }
+  .arch-node.pill{ border-radius:999px; border:none; background:var(--lavender-100); color:var(--violet-700); padding:.55cqw 1.7cqw; }
+  .arch-node.primary{ border:none; background:linear-gradient(120deg, var(--violet-500), var(--violet-700)); color:#fff; padding:.85cqw 2.1cqw; font-size:1.22cqw; box-shadow:0 14px 26px -14px rgba(109,40,217,.6); }
+  .arch-node.primary small{ color:rgba(255,255,255,.78); }
+  .arch-line{ width:2px; height:2.1cqw; background:var(--lavender-300); position:relative; }
+  .arch-line::after{ content:''; position:absolute; bottom:.2cqw; left:50%; transform:translateX(-50%); width:0;height:0; border-left:.36cqw solid transparent; border-right:.36cqw solid transparent; border-top:.5cqw solid var(--lavender-300); }
+  .arch-line-label{ position:absolute; left:50%; top:50%; transform:translate(1.1cqw,-50%); font-size:.82cqw; color:var(--gray-500); white-space:nowrap; font-weight:600; }
+  .arch-branch-stem{ width:2px; height:1cqw; background:var(--lavender-300); }
+  .arch-branch-bar{ height:2px; width:56cqw; background:var(--lavender-300); }
+  .arch-branch-items{ display:flex; justify-content:space-between; width:56cqw; }
+  .arch-branch-item{ flex:1; display:flex; flex-direction:column; align-items:center; gap:.55cqw; padding:0 .7cqw; }
+  .stem2{ width:2px; height:.9cqw; background:var(--lavender-300); }
+  .arch-note{ font-size:.8cqw; color:var(--gray-500); font-weight:600; }
+  .arch-info-panel{ width:56cqw; margin-top:1.6cqw; background:var(--lavender-50); border:1px solid var(--lavender-200); border-radius:.85cqw; padding:.9cqw 1.6cqw; display:flex; flex-direction:column; gap:.55cqw; flex-shrink:0; }
+  .arch-info-text{ font-size:1.02cqw; color:var(--gray-600); font-weight:500; line-height:1.55; }
+  .arch-info-text b{ color:var(--ink); font-weight:800; }
+  .arch-link-line{ display:flex; align-items:center; justify-content:center; gap:1.1cqw; margin-top:1.9cqw; flex-wrap:wrap; flex-shrink:0; }
+  .arch-link-item{ display:inline-flex; align-items:center; gap:.5cqw; font-size:1cqw; color:var(--gray-600); font-weight:600; }
+  .arch-link-item svg{ width:1.05cqw; height:1.05cqw; color:var(--violet-500); flex-shrink:0; }
+  .arch-link-item b{ color:var(--ink); font-weight:800; }
+  .arch-link-sep{ color:var(--lavender-300); font-size:1.05cqw; font-weight:400; }
+
+  /* =========================================================
+     SLIDE 06 — 데이터 전처리
+     ========================================================= */
+  .dp-body{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; gap:1.3cqw; }
+
+  /* row 1 : 4-step process cards (icon-free, text only) */
+  .dp-steps{ display:flex; gap:1cqw; flex-shrink:0; }
+  .dp-step{ flex:1; display:flex; flex-direction:column; background:#fff; border:1px solid var(--line); border-radius:.85cqw; padding:1.3cqw 1.35cqw; min-width:0; }
+  .dp-step-label{ font-size:.82cqw; font-weight:800; color:var(--violet-600); letter-spacing:.04em; text-transform:uppercase; margin-bottom:.5cqw; }
+  .dp-step-title{ font-size:1.14cqw; font-weight:800; color:var(--ink); margin-bottom:.75cqw; }
+  .dp-step-desc{ font-size:.94cqw; line-height:1.55; color:var(--gray-600); font-weight:500; }
+  .dp-step-desc b{ color:var(--ink); font-weight:700; }
+
+  /* row 2 : left donut comparison + right standardization example */
+  .dp-mid{ flex:1 1 auto; display:flex; gap:1.5cqw; min-height:0; }
+  .dp-panel{ flex:1; background:#fff; border:1px solid var(--line); border-radius:1cqw; padding:1.8cqw 2.1cqw; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+  .dp-panel-title{ font-size:1.25cqw; font-weight:800; color:var(--ink); margin-bottom:.4cqw; flex-shrink:0; }
+  .dp-panel-sub{ font-size:1.02cqw; color:var(--gray-500); font-weight:500; margin-bottom:2.2cqw; flex-shrink:0; }
+
+  /* donut comparison panel */
+  .dp-donut-row{ flex:1; display:flex; align-items:center; justify-content:center; gap:3.2cqw; min-height:0; }
+  .dp-donut-item{ display:flex; flex-direction:column; align-items:center; gap:.65cqw; flex-shrink:0; }
+  .dp-donut-wrap{ position:relative; width:7cqw; height:7cqw; flex-shrink:0; }
+  .dp-donut-wrap svg{ display:block; width:100%; height:100%; transform:rotate(-90deg); }
+  .dp-donut-wrap .bg{ fill:none; stroke:var(--line); stroke-width:7; }
+  .dp-donut-wrap .fg{ fill:none; stroke-width:7; stroke-linecap:round; }
+  .dp-donut-wrap.primary .fg{ stroke:url(#donutGrad); }
+  .dp-donut-wrap.muted .bg{ stroke:var(--lavender-100); }
+  .dp-donut-wrap.muted .fg{ stroke:var(--gray-400); }
+  .dp-donut-center{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .dp-donut-num{ font-size:1.55cqw; font-weight:800; color:var(--ink); line-height:1; white-space:nowrap; }
+  .dp-donut-item.primary .dp-donut-num{ color:var(--violet-700); }
+  .dp-donut-name{ font-size:1.05cqw; font-weight:700; color:var(--gray-700); white-space:nowrap; }
+  .dp-donut-item.primary .dp-donut-name{ color:var(--ink); }
+  .dp-donut-note{ font-size:.88cqw; color:var(--gray-500); font-weight:500; white-space:nowrap; }
+  .dp-donut-plus{ font-size:1.5cqw; font-weight:800; color:var(--lavender-400); flex-shrink:0; }
+
+  /* standardization panel */
+  .dp-std-compare{ flex:1; display:flex; align-items:center; justify-content:center; gap:1.3cqw; min-height:0; }
+  .dp-std-raw-col{ display:flex; flex-direction:column; gap:.8cqw; flex:1; min-width:0; }
+  .dp-std-chip{ font-size:1.15cqw; font-weight:700; text-align:center; padding:.85cqw .5cqw; border-radius:.65cqw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dp-std-chip.raw{ background:var(--lavender-50); color:var(--gray-500); border:1px dashed var(--lavender-300); text-decoration:line-through; text-decoration-color:var(--gray-400); }
+  .dp-std-arrow{ flex-shrink:0; width:1.9cqw; height:1.9cqw; color:var(--lavender-400); }
+  .dp-std-chip.unified{ flex:1; min-width:0; border:none; background:linear-gradient(120deg, var(--violet-500), var(--violet-700)); color:#fff; box-shadow:0 12px 22px -12px rgba(109,40,217,.55); }
+  .dp-std-caption{ margin-top:1.3cqw; font-size:1.02cqw; color:var(--gray-600); font-weight:500; line-height:1.5; text-align:center; flex-shrink:0; }
+  .dp-std-caption b{ color:var(--violet-700); font-weight:800; }
+
+  /* =========================================================
+     SECTION DIVIDER (07 / 12 / 17)
+     ========================================================= */
+  .slide.divider{ background:linear-gradient(135deg,var(--violet-600) 0%, var(--violet-900) 100%); }
+  .slide.divider.alt{ background:linear-gradient(135deg,var(--violet-500) 0%, var(--violet-700) 100%); }
+  .divider-decor{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .divider-decor span{ position:absolute; border-radius:50%; background:rgba(255,255,255,.05); }
+  .divider-decor .d1{ width:30cqw; height:30cqw; right:-8cqw; top:-10cqw; }
+  .divider-decor .d2{ width:22cqw; height:22cqw; left:-6cqw; bottom:-8cqw; }
+  .divider-wrap{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .divider-label{ font-size:1.2cqw; font-weight:800; letter-spacing:.32em; text-transform:uppercase; color:var(--lavender-200); margin-bottom:1.7cqw; }
+  .divider-title{ font-size:6.5cqw; font-weight:800; color:#fff; letter-spacing:-.02em; }
+  .divider-url{ margin-top:2.4cqw; display:inline-flex; align-items:center; gap:.6cqw; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); color:#fff; font-weight:700; font-size:1.35cqw; padding:.95cqw 2.1cqw; border-radius:999px; letter-spacing:-.01em; font-family:'D2Coding','Fira Code',Consolas,monospace; }
+  .slide.divider .slide-footer .brand-mark span{ color:rgba(255,255,255,.72); }
+  .slide.divider .slide-footer .page-num{ color:rgba(255,255,255,.5); }
+
+  /* =========================================================
+     SLIDE 08~11 — 백엔드 핵심 로직 (코드 블록)
+     ========================================================= */
+  .logic-split{ flex:1 1 auto; display:flex; gap:2.8cqw; align-items:stretch; }
+  .logic-exp{ flex:0 0 34%; display:flex; flex-direction:column; justify-content:center; gap:1.3cqw; }
+  .logic-exp li{ display:flex; align-items:flex-start; gap:.7cqw; }
+  .logic-exp li svg{ flex-shrink:0; width:1.3cqw; height:1.3cqw; margin-top:.25cqw; }
+  .logic-exp li > span{ flex:1 1 auto; min-width:0; font-size:1.16cqw; line-height:1.58; color:var(--gray-700); font-weight:500; }
+  .logic-exp li > span b{ color:var(--violet-700); font-weight:800; }
+  .logic-code{ flex:1; display:flex; align-items:center; }
+
+  /* slide 08 — Access/Refresh Token 분리 구조 (아이콘 카드) */
+  .tok-body{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; gap:1.7cqw; justify-content:center; }
+  .tok-desc{ font-size:1.28cqw; line-height:1.65; color:var(--gray-600); font-weight:500; flex-shrink:0; }
+  .tok-cards{ display:flex; gap:1.8cqw; flex-shrink:0; }
+  .tok-card{ flex:1; background:#fff; border:1px solid var(--line); border-radius:1cqw; padding:2cqw 2.1cqw; display:flex; flex-direction:column; gap:1.1cqw; }
+  .tok-icon-circle{ flex-shrink:0; width:3.3cqw; height:3.3cqw; border-radius:50%; background:var(--lavender-100); display:flex; align-items:center; justify-content:center; }
+  .tok-icon-circle svg{ width:1.7cqw; height:1.7cqw; color:var(--violet-700); }
+  .tok-card-title{ font-size:1.55cqw; font-weight:800; color:var(--ink); }
+  .tok-card-tag{ font-size:1.05cqw; font-weight:700; color:var(--violet-600); margin-top:-.7cqw; }
+  .tok-card ul{ list-style:none; display:flex; flex-direction:column; gap:.65cqw; margin-top:.3cqw; }
+  .tok-card ul li{ display:flex; align-items:flex-start; gap:.6cqw; font-size:1.08cqw; line-height:1.5; color:var(--gray-700); font-weight:500; }
+  .tok-card ul li svg{ flex-shrink:0; width:1.15cqw; height:1.15cqw; margin-top:.22cqw; color:var(--violet-600); }
+  .tok-summary{ display:flex; align-items:center; gap:1.4cqw; background:var(--lavender-50); border:1.5px solid var(--lavender-200); border-radius:1cqw; padding:1.5cqw 2.2cqw; flex-shrink:0; }
+  .tok-summary-icon{ flex-shrink:0; width:2.7cqw; height:2.7cqw; color:var(--violet-600); }
+  .tok-summary p{ font-size:1.24cqw; font-weight:600; color:var(--ink); line-height:1.6; }
+  .tok-summary p b{ color:var(--violet-700); font-weight:800; }
+
+  /* slide 09 — 재발급(reissue) 흐름 리스트 + 코드 */
+  .reissue-flow{ flex:0 0 34%; display:flex; flex-direction:column; gap:.85cqw; justify-content:center; }
+  .rf-item{ display:flex; align-items:center; gap:.95cqw; background:#fff; border:1px solid var(--line); border-radius:.85cqw; padding:.8cqw 1.15cqw; }
+  .rf-icon{ flex-shrink:0; width:2.35cqw; height:2.35cqw; border-radius:.65cqw; background:var(--lavender-100); display:flex; align-items:center; justify-content:center; }
+  .rf-icon svg{ width:1.2cqw; height:1.2cqw; color:var(--violet-700); }
+  .rf-text{ min-width:0; }
+  .rf-label{ font-size:1.06cqw; font-weight:800; color:var(--ink); margin-bottom:.15cqw; }
+  .rf-desc{ font-size:.86cqw; color:var(--gray-500); font-weight:500; line-height:1.4; }
+
+  .logic-stack{ flex:1 1 auto; display:flex; flex-direction:column; gap:1.4cqw; justify-content:center; }
+  .logic-caption{ font-size:1.08cqw; line-height:1.62; color:var(--gray-700); font-weight:500; flex-shrink:0; }
+  .logic-caption b{ color:var(--violet-700); font-weight:800; }
+
+  .code-window{ flex:1 1 auto; background:#1E1A2B; border-radius:1cqw; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 22px 46px -26px rgba(30,20,50,.6); }
+  .code-titlebar{ display:flex; align-items:center; gap:.5cqw; padding:.6cqw 1.3cqw; background:#252136; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; }
+  .code-dot{ width:.68cqw; height:.68cqw; border-radius:50%; flex-shrink:0; }
+  .code-dot.r{ background:#FF5F57; } .code-dot.y{ background:#FEBC2E; } .code-dot.g{ background:#28C840; }
+  .code-filename{ margin-left:.7cqw; font-size:.92cqw; color:#9C97AE; font-family:'D2Coding','Fira Code',Consolas,monospace; }
+  .code-body{ padding:.7cqw 0; }
+  .cl{ white-space:pre; font-family:'D2Coding','Fira Code',Consolas,monospace; font-size:.98cqw; line-height:1.36; padding:0 1.6cqw; color:#D4D4D4; }
+  .cl.hl1{ background:rgba(196,181,253,.18); border-left:.24cqw solid var(--lavender-400); padding-left:calc(1.6cqw - .24cqw); }
+  .cl.hl2{ background:rgba(167,139,250,.18); border-left:.24cqw solid var(--violet-500); padding-left:calc(1.6cqw - .24cqw); }
+  .cl.hl3{ background:rgba(124,58,237,.18); border-left:.24cqw solid var(--violet-600); padding-left:calc(1.6cqw - .24cqw); }
+  .cl.hl4{ background:rgba(109,40,217,.18); border-left:.24cqw solid var(--violet-700); padding-left:calc(1.6cqw - .24cqw); }
+  .cl .kw{ color:#C586C0; } .cl .ty{ color:#4EC9B0; } .cl .fn{ color:#DCDCAA; } .cl .str{ color:#CE9178; } .cl .cm{ color:#8FBF98; }
+
+  .compare-row{ display:flex; align-items:center; gap:1.7cqw; flex-shrink:0; }
+  .compare-card{ flex:1; border-radius:1cqw; padding:.9cqw 1.6cqw; text-align:center; }
+  .compare-card.before{ background:#F7F6FA; border:1.4px solid var(--line); }
+  .compare-card.after{ background:var(--lavender-50); border:1.6px solid var(--violet-400); }
+  .compare-tag{ font-size:.95cqw; font-weight:800; letter-spacing:.05em; margin-bottom:.5cqw; text-transform:uppercase; }
+  .compare-card.before .compare-tag{ color:var(--gray-500); }
+  .compare-card.after .compare-tag{ color:var(--violet-600); }
+  .compare-value{ font-size:2cqw; font-weight:800; line-height:1.15; }
+  .compare-card.before .compare-value{ color:var(--gray-600); }
+  .compare-card.after .compare-value{ color:var(--violet-700); }
+  .compare-arrow-mid{ flex:0 0 auto; width:2.4cqw; height:2.4cqw; color:var(--lavender-400); }
+
+  .pill-flow{ display:flex; align-items:center; gap:1cqw; flex-wrap:wrap; flex-shrink:0; }
+  .pill-flow .pf-step{ background:var(--lavender-50); border:1.4px solid var(--lavender-200); border-radius:999px; padding:.65cqw 1.4cqw; font-size:1.05cqw; font-weight:700; color:var(--violet-700); white-space:nowrap; }
+  .pill-flow .pf-arrow{ color:var(--lavender-400); font-size:1.3cqw; flex-shrink:0; font-weight:700; }
+
+  /* =========================================================
+     SLIDE 13~15 — 프론트엔드
+     ========================================================= */
+  .fe-split{ flex:1 1 auto; display:flex; gap:3cqw; align-items:center; }
+  .fe-visual{ flex:0 0 40%; display:flex; align-items:center; justify-content:center; }
+  .fe-bullets{ flex:1; min-width:0; }
+
+  .msw-flow{ display:flex; flex-direction:column; align-items:center; gap:1.2cqw; width:100%; }
+  .msw-box{ width:100%; background:#fff; border:1.5px solid var(--line); border-radius:1cqw; padding:1.6cqw; text-align:center; }
+  .msw-box.active{ border-color:var(--violet-400); background:var(--lavender-50); }
+  .msw-box .msw-tag{ font-size:.95cqw; font-weight:800; color:var(--gray-500); letter-spacing:.05em; text-transform:uppercase; margin-bottom:.5cqw; }
+  .msw-box.active .msw-tag{ color:var(--violet-600); }
+  .msw-box .msw-name{ font-size:1.35cqw; font-weight:800; color:var(--ink); }
+  .msw-arrow-down{ color:var(--lavender-400); width:1.8cqw; height:1.8cqw; flex-shrink:0; }
+
+  .branch-root{ background:#1E1A2B; border-radius:.7cqw; padding:.95cqw 1.7cqw; font-weight:700; font-size:1.15cqw; color:#DCDCAA; font-family:'D2Coding','Fira Code',Consolas,monospace; }
+  .branch-side{ flex:1; display:flex; flex-direction:column; align-items:center; gap:.85cqw; padding:0 .8cqw; }
+  .branch-tag{ font-size:1.05cqw; font-weight:800; padding:.4cqw 1.1cqw; border-radius:999px; }
+  .branch-tag.yes{ background:var(--violet-600); color:#fff; }
+  .branch-tag.no{ background:var(--lavender-100); color:var(--violet-700); }
+  .branch-result{ background:#fff; border:1px solid var(--line); border-radius:.8cqw; padding:1cqw 1.5cqw; font-size:1.12cqw; font-weight:700; color:var(--ink); text-align:center; }
+
+  .device-row{ display:flex; gap:2cqw; align-items:flex-end; justify-content:center; }
+  .device-frame{ background:#fff; border:1.5px solid var(--line); border-radius:.9cqw; overflow:hidden; box-shadow:0 16px 32px -22px rgba(76,29,149,.24); }
+  .device-frame.desktop{ width:19cqw; }
+  .device-frame.mobile{ width:8.6cqw; }
+  .device-topbar{ height:2.4cqw; background:var(--lavender-50); border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 1cqw; gap:1.2cqw; }
+  .device-topbar.mtop{ justify-content:space-between; }
+  .device-topbar .logo-dot{ width:.95cqw;height:.95cqw;border-radius:50%; background:var(--violet-600); flex-shrink:0; }
+  .device-topbar .nav-item{ height:.46cqw; width:2.2cqw; border-radius:2px; background:var(--lavender-300); }
+  .device-topbar .burger{ display:flex; flex-direction:column; gap:.24cqw; }
+  .device-topbar .burger span{ width:1.15cqw; height:.2cqw; background:var(--violet-600); border-radius:1px; }
+  .device-body{ padding:1.2cqw; display:flex; flex-direction:column; gap:.75cqw; }
+  .device-body .bar{ height:1.4cqw; border-radius:.3cqw; background:var(--lavender-100); }
+  .device-body .bar.w60{ width:60%; } .device-body .bar.w80{width:80%;} .device-body .bar.w100{width:100%;}
+  .device-caption{ text-align:center; font-size:1.05cqw; font-weight:700; color:var(--gray-500); margin-top:1cqw; }
+
+  .flow-rows{ flex:1 1 auto; display:flex; flex-direction:column; gap:1.3cqw; justify-content:space-evenly; }
+  .flow-row{ display:flex; align-items:center; gap:1.8cqw; background:var(--lavender-50); border-radius:1cqw; padding:1.7cqw 2.1cqw; }
+  .flow-row-icon{ flex-shrink:0; width:2.7cqw; height:2.7cqw; color:var(--violet-700); }
+  .flow-row-icon svg{ width:100%; height:100%; }
+  .flow-row-text{ min-width:0; }
+  .flow-row-title{ font-size:1.38cqw; font-weight:800; color:var(--violet-700); margin-bottom:.4cqw; letter-spacing:-.01em; }
+  .flow-row-desc{ font-size:1.1cqw; color:var(--gray-600); font-weight:500; line-height:1.45; }
+
+  /* =========================================================
+     SLIDE 17 — 아쉬운 점 및 보완할 점 (3행)
+     ========================================================= */
+  .retro-row{ flex:1 1 auto; display:flex; flex-direction:column; gap:1.2cqw; justify-content:center; }
+  .retro-card{ background:#fff; border:1px solid var(--line); border-radius:1cqw; padding:1.6cqw 2cqw; display:flex; flex-direction:row; align-items:center; gap:1.5cqw; }
+  .retro-icon{ flex-shrink:0; width:2.7cqw; height:2.7cqw; border-radius:50%; background:var(--lavender-100); display:flex; align-items:center; justify-content:center; }
+  .retro-icon svg{ width:1.45cqw; height:1.45cqw; color:var(--violet-700); }
+  .retro-card p{ flex:1 1 auto; min-width:0; font-size:1.24cqw; line-height:1.6; color:var(--gray-700); font-weight:500; }
+  .retro-card p b{ color:var(--violet-700); font-weight:800; }
+
+  /* =========================================================
+     SLIDE 18 — 마무리
+     ========================================================= */
+  .closing-wrap{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 6cqw; }
+  .closing-quote{ font-size:2.5cqw; font-weight:800; line-height:1.55; color:var(--ink); max-width:82%; margin-bottom:2.4cqw; }
+  .closing-quote b{ color:var(--violet-700); }
+  .closing-points{ display:flex; flex-direction:column; gap:.9cqw; align-items:center; margin-bottom:2.6cqw; }
+  .closing-points .cp{ font-size:1.22cqw; color:var(--gray-600); font-weight:500; }
+  .closing-points .cp b{ color:var(--violet-700); font-weight:800; }
+  .closing-final{ font-size:1.9cqw; font-weight:800; color:var(--ink); margin-bottom:.4cqw; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="brandGrad" x1="0" y1="0" x2="24" y2="24">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="donutGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ================= SLIDE 01 : 표지 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 01</div>
+  <div class="slide cover">
+    <div class="cover-decor"><span class="c1"></span><span class="c2"></span></div>
+    <div class="cover-wrap">
+      <span class="cover-badge">Team Project Presentation</span>
+      <h1 class="cover-title">ZeroPick</h1>
+      <p class="cover-sub">제로 식품, <b>성분까지 똑똑하게</b> 비교하다</p>
+      <div class="cover-credit">ZeroPick Team · 김미리 · 김아인 · 이시은</div>
+      <div class="cover-link">ecc2team.github.io/frontend</div>
+    </div>
+    <div class="slide-footer">
+      <span></span>
+      <span class="page-num">01</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 02 : 팀 소개 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 02</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">team</div>
+      <h1 class="title-main">팀 소개</h1>
+
+      <p class="lede">
+        저희는 제로 식품 정보 제공 및 개인 맞춤 서비스를 개발한 <b>ZeroPick</b> 팀입니다.
+        ZeroPick은 다양한 제로·저당 제품의 정보를 한곳에서 검색하고 분석할 수 있으며, 사용자의 취향과 알레르기 정보를 바탕으로
+        제품을 추천하고 여러 제품을 직접 비교할 수 있는 웹 서비스입니다.
+      </p>
+
+      <div class="team-row">
+        <article class="team-card">
+          <div class="avatar-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8.2" r="3.4"/><path d="M5.3 19.6c0-3.7 3-6.2 6.7-6.2s6.7 2.5 6.7 6.2"/>
+            </svg>
+          </div>
+          <h3 class="member-name">김미리</h3>
+          <span class="role-badge role-backend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="6" rx="1.4"/><rect x="3" y="14" width="18" height="6" rx="1.4"/>
+              <circle cx="7" cy="7" r=".6" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r=".6" fill="currentColor" stroke="none"/>
+            </svg>
+            Backend
+          </span>
+          <div class="card-divider"></div>
+          <ul class="duty-list">
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>데이터 전처리</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>로그인 / 회원 관리</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>카테고리 API</li>
+          </ul>
+        </article>
+
+        <article class="team-card">
+          <div class="avatar-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8.2" r="3.4"/><path d="M5.3 19.6c0-3.7 3-6.2 6.7-6.2s6.7 2.5 6.7 6.2"/>
+            </svg>
+          </div>
+          <h3 class="member-name">김아인</h3>
+          <span class="role-badge role-backend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="6" rx="1.4"/><rect x="3" y="14" width="18" height="6" rx="1.4"/>
+              <circle cx="7" cy="7" r=".6" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r=".6" fill="currentColor" stroke="none"/>
+            </svg>
+            Backend
+          </span>
+          <div class="card-divider"></div>
+          <ul class="duty-list">
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>상품 조회</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>섭취 기록</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>비교함 API</li>
+          </ul>
+        </article>
+
+        <article class="team-card">
+          <div class="avatar-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8.2" r="3.4"/><path d="M5.3 19.6c0-3.7 3-6.2 6.7-6.2s6.7 2.5 6.7 6.2"/>
+            </svg>
+          </div>
+          <h3 class="member-name">이시은</h3>
+          <span class="role-badge role-frontend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/>
+            </svg>
+            Frontend
+          </span>
+          <div class="card-divider"></div>
+          <ul class="duty-list">
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>UI / UX 설계</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>프론트엔드 개발</li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>API 연동 및 배포</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">02</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 03 : 기획 배경 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 03</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">background</div>
+      <h1 class="core-message">"제로"라고 적혀 있다고 모든 성분이 <span class="accent">같은 건 아니다</span></h1>
+
+      <div class="flow-wrap">
+        <div class="problem-cards">
+          <div class="problem-card"><span class="num-badge">1</span><p>최근 '제로', '무설탕', '저당' 식품이 빠르게 늘며 소비자 선택지도 증가</p></div>
+          <div class="problem-card"><span class="num-badge">2</span><p>설탕 대신 말티톨 등 대체 감미료가 쓰이는 등, 성분은 제품마다 달라 개인별 확인이 필요</p></div>
+          <div class="problem-card"><span class="num-badge">3</span><p>원재료명을 봐도 이해하기 어려워 직접 검색·비교해야 하는 불편함 존재</p></div>
+        </div>
+
+        <div class="flow-connector">
+          <span class="label">그래서, ZeroPick은</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 4v13M6 12l6 6 6-6"/></svg>
+        </div>
+
+        <div class="solution-bar">
+          <svg class="badge-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#EDE9FE"/><path d="M7 12.5l3 3 7-7.5" stroke="#6D28D9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>실제 성분과 영양정보를 한곳에서 확인하고, 어려운 성분은 쉽게 요약해서 제공<span class="sep">+</span>비교·맞춤 추천까지<span class="brand-pill-final">ZeroPick</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">03</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 04 : 서비스 개요 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 04</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">overview</div>
+      <h1 class="title-main">서비스 개요</h1>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.3" y1="15.3" x2="21" y2="21"/></svg></div>
+          <h3 class="feature-title">검색 &amp; 카테고리 탐색</h3>
+          <p class="feature-desc">키워드 검색, 카테고리별 BEST 5, 추천순·최신순·가나다순·인기순·조회순 정렬</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="13" height="17" rx="2"/><line x1="7" y1="9" x2="14" y2="9"/><line x1="7" y1="13" x2="14" y2="13"/><line x1="7" y1="17" x2="11" y2="17"/><path d="M18.2 3.2l1 2 2.2.3-1.6 1.6.4 2.2-2-1-2 1 .4-2.2-1.6-1.6 2.2-.3z" fill="currentColor" stroke="none"/></svg></div>
+          <h3 class="feature-title">상품 상세</h3>
+          <p class="feature-desc">ZeroPick 점수, 영양 정보, 주요 성분 분석, 조회수</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="14" rx="1"/><rect x="16" y="14" width="4" height="6" rx="1"/><line x1="3" y1="21" x2="21" y2="21"/></svg></div>
+          <h3 class="feature-title">비교함</h3>
+          <p class="feature-desc">같은 카테고리 내 최대 3개 상품을 열량·당류·나트륨·알레르기·성분·점수로 비교</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.8"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div>
+          <h3 class="feature-title">맞춤 추천</h3>
+          <p class="feature-desc">선호 카테고리, 비선호 성분, 알레르기 정보 기반 개인화 추천</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12.5" r="8.3"/><path d="M12 8v4.7l3.3 2"/></svg></div>
+          <h3 class="feature-title">섭취 기록 &amp; 최근 조회</h3>
+          <p class="feature-desc">오늘의 섭취 기록, 프로필 관리, 최근 조회 상품</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.8-3 8.5-7 9.5-4-1-7-4.7-7-9.5V6l7-3z"/><path d="M9 12.3l2.1 2.1L15.4 10"/></svg></div>
+          <h3 class="feature-title">회원 기능</h3>
+          <p class="feature-desc">이메일 인증, 닉네임 중복 확인, 카카오·구글 소셜 로그인</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">04</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 05 : 시스템 아키텍처 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 05</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">architecture</div>
+      <h1 class="title-main">시스템 아키텍처</h1>
+
+      <div class="arch-diagram">
+        <div class="arch-node pill compact">사용자 브라우저</div>
+        <div class="arch-line"></div>
+        <div class="arch-node">Frontend <small>React + Vite · SPA / React Router</small></div>
+        <div class="arch-line"><span class="arch-line-label">검색 · 상품조회 요청</span></div>
+        <div class="arch-node primary">Backend <small>Spring Boot 3 · REST API</small></div>
+        <div class="arch-branch-stem"></div>
+        <div class="arch-branch-bar"></div>
+        <div class="arch-branch-items">
+          <div class="arch-branch-item">
+            <div class="stem2"></div>
+            <div class="arch-node compact">Database <small>PostgreSQL (Supabase)</small></div>
+            <div class="arch-note">스키마 이력 · Flyway</div>
+          </div>
+          <div class="arch-branch-item">
+            <div class="stem2"></div>
+            <div class="arch-node compact">OAuth2 <small>카카오 / 구글 로그인</small></div>
+          </div>
+          <div class="arch-branch-item">
+            <div class="stem2"></div>
+            <div class="arch-node compact">Mailgun <small>이메일 인증 발송</small></div>
+          </div>
+        </div>
+
+        <div class="arch-info-panel">
+          <span class="arch-info-text"><b>배포 환경</b> · Frontend → GitHub Pages / Backend → Render / DB → Supabase</span>
+          <span class="arch-info-text"><b>인증 방식</b> · JWT 기반 (Access / Refresh Token) · 환경변수: 로컬-배포별 API 주소, OAuth Redirect URI 분리 관리</span>
+        </div>
+      </div>
+
+      <div class="arch-link-line">
+        <span class="arch-link-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>ecc2team.github.io/frontend</span>
+        <span class="arch-link-sep">|</span>
+        <span class="arch-link-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>Swagger API 문서</span>
+        <span class="arch-link-sep">|</span>
+        <span class="arch-link-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>github.com/orgs/ecc2team</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">05</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 06 : 데이터 전처리 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 06</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">data pipeline</div>
+      <h1 class="title-main">데이터 전처리</h1>
+      <p class="quote-line">JOIN보다 중요했던 건, 두 데이터의 구조와 기준을 맞추는 과정</p>
+
+      <div class="dp-body">
+        <div class="dp-steps">
+          <div class="dp-step">
+            <span class="dp-step-label">STEP 01</span>
+            <h3 class="dp-step-title">대용량 수집</h3>
+            <p class="dp-step-desc">식약처 <b>식품영양성분DB + 원재료 정보</b> API 수집. 호출 제한을 피해 야간 시간대에 추출 진행</p>
+          </div>
+          <div class="dp-step">
+            <span class="dp-step-label">STEP 02</span>
+            <h3 class="dp-step-title">키 정규화 &amp; JOIN</h3>
+            <p class="dp-step-desc"><b>품목제조보고번호</b> 형식 정규화 후, 여러 행으로 나뉜 원재료를 제품 단위로 그룹화하여 JOIN</p>
+          </div>
+          <div class="dp-step">
+            <span class="dp-step-label">STEP 03</span>
+            <h3 class="dp-step-title">원재료 표준화</h3>
+            <p class="dp-step-desc">같은 성분의 다른 표기를 <b>AI 기반 클러스터링</b>으로 통합해 원재료명 표준화</p>
+          </div>
+          <div class="dp-step">
+            <span class="dp-step-label">STEP 04</span>
+            <h3 class="dp-step-title">최종 등급 판정</h3>
+            <p class="dp-step-desc"><b>위험 성분 + 영양성분</b>에 마케팅 표현까지 종합해 최종 등급 산출</p>
+          </div>
+        </div>
+
+        <div class="dp-mid">
+          <div class="dp-panel dp-donut-panel">
+            <div class="dp-panel-title">확보한 데이터 규모</div>
+            <div class="dp-panel-sub">두 데이터를 표준화해 JOIN 가능한 상태로 정제</div>
+            <div class="dp-donut-row">
+              <div class="dp-donut-item primary">
+                <div class="dp-donut-wrap primary">
+                  <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="26"/></svg>
+                  <div class="dp-donut-center"><span class="dp-donut-num">12만</span></div>
+                </div>
+                <div class="dp-donut-name">영양성분 데이터</div>
+                <div class="dp-donut-note">약 120,000건</div>
+              </div>
+              <span class="dp-donut-plus">+</span>
+              <div class="dp-donut-item">
+                <div class="dp-donut-wrap muted">
+                  <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="53"/></svg>
+                  <div class="dp-donut-center"><span class="dp-donut-num">10만</span></div>
+                </div>
+                <div class="dp-donut-name">원재료 데이터</div>
+                <div class="dp-donut-note">약 100,000건</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dp-panel dp-std-panel">
+            <div class="dp-panel-title">원재료명 표준화 예시</div>
+            <div class="dp-panel-sub">표기가 달라도 같은 성분이면 하나로 통일</div>
+            <div class="dp-std-compare">
+              <div class="dp-std-raw-col">
+                <span class="dp-std-chip raw">알룰로스</span>
+                <span class="dp-std-chip raw">알룰로오스</span>
+              </div>
+              <svg class="dp-std-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              <span class="dp-std-chip unified">알룰로스</span>
+            </div>
+            <p class="dp-std-caption">AI 클러스터링으로 표기 차이를 제거하고 <b>하나의 기준</b>으로 통합</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">06</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 07 : 백엔드 (섹션 구분) ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 07</div>
+  <div class="slide divider">
+    <div class="divider-decor"><span class="d1"></span><span class="d2"></span></div>
+    <div class="divider-wrap">
+      <span class="divider-label">Backend</span>
+      <h1 class="divider-title">백엔드</h1>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M7 12.5l3 3 7-7.5" stroke="#6D28D9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 08 : 핵심 로직 ① Access/Refresh Token 분리 구조 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 08</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">core logic · 01</div>
+      <h1 class="title-sub">Access Token · Refresh Token 분리 구조</h1>
+
+      <div class="tok-body">
+      <p class="tok-desc">긴 수명의 토큰은 안전하게 감추고, 짧은 수명의 토큰만 매 요청에 명시적으로 전달하도록 설계했습니다.</p>
+
+      <div class="tok-cards">
+        <div class="tok-card">
+          <div class="tok-icon-circle"><svg viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><rect fill="currentColor" x="4" y="10" width="16" height="11" rx="2.5"/><circle fill="#EDE9FE" cx="12" cy="14.6" r="1.5"/><rect fill="#EDE9FE" x="11.1" y="15.6" width="1.8" height="3" rx=".5"/></svg></div>
+          <div class="tok-card-title">Access Token</div>
+          <div class="tok-card-tag">짧은 유효기간으로 보안 강화</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>JSON 응답 <b>body</b>로 전달 (쿠키 미사용)</span></li>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>API 요청 시 <b>Authorization: Bearer</b> 헤더에 포함</span></li>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>유효기간 <b>24시간</b></span></li>
+          </ul>
+        </div>
+        <div class="tok-card">
+          <div class="tok-icon-circle"><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="7.5" cy="7.5" r="4.5"/><circle fill="#EDE9FE" cx="7.5" cy="7.5" r="1.8"/><rect fill="currentColor" x="10" y="9.5" width="10" height="3" rx="1.5" transform="rotate(45 10 9.5)"/></svg></div>
+          <div class="tok-card-title">Refresh Token</div>
+          <div class="tok-card-tag">긴 유효기간으로 로그인 유지</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>HttpOnly Cookie</b>로 저장 (JS로 접근 불가)</span></li>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>쿠키 경로를 <b>/api/v1/auth</b>로 제한</span></li>
+            <li><svg viewBox="0 0 24 24"><circle fill="currentColor" cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>유효기간 <b>14일</b></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tok-summary">
+        <svg class="tok-summary-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>수명이 긴 Refresh Token은 <b>JavaScript가 접근할 수 없는 쿠키</b>에 감추고, Access Token은 필요한 요청에만 명시적으로 실어 <b>보안</b>과 <b>끊김 없는 로그인 경험</b>을 함께 확보했습니다.</p>
+      </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">08</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 09 : 핵심 로직 ① 재발급(Reissue) 흐름과 로그아웃 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 09</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">core logic · 01</div>
+      <h1 class="title-sub">재발급(Reissue) 흐름과 로그아웃 처리</h1>
+
+      <div class="logic-split">
+        <div class="reissue-flow">
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></div>
+            <div class="rf-text"><div class="rf-label">Access Token 만료</div><div class="rf-desc">24시간 후 /reissue API 호출</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9.5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="14.5" r="1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="14" r="1" fill="currentColor" stroke="none"/></svg></div>
+            <div class="rf-text"><div class="rf-label">Refresh Token 대조</div><div class="rf-desc">쿠키 값과 DB 저장값 비교</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+            <div class="rf-text"><div class="rf-label">토큰 교체(Rotation)</div><div class="rf-desc">Access + Refresh 모두 신규 발급</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></div>
+            <div class="rf-text"><div class="rf-label">로그아웃 처리</div><div class="rf-desc">DB Refresh Token 무효화 + 쿠키 삭제</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+            <div class="rf-text"><div class="rf-label">Cookie 경로 제한</div><div class="rf-desc">/api/v1/auth 요청에만 자동 포함</div></div>
+          </div>
+        </div>
+
+        <div class="logic-code">
+          <div class="code-window">
+            <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">TokenService.java</span></div>
+            <div class="code-body">
+<div class="cl"><span class="kw">public</span> <span class="ty">TokenPair</span> <span class="fn">reissue</span>(<span class="ty">String</span> refreshToken) {</div>
+<div class="cl">    <span class="kw">if</span> (!<span class="ty">StringUtils</span>.<span class="fn">hasText</span>(refreshToken) || !jwtUtil.<span class="fn">isValid</span>(refreshToken)) {</div>
+<div class="cl">        <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">UnauthorizedException</span>(<span class="str">"리프레시 토큰이 유효하지 않습니다."</span>);</div>
+<div class="cl">    }</div>
+<div class="cl">    <span class="ty">String</span> email = jwtUtil.<span class="fn">extractEmail</span>(refreshToken);</div>
+<div class="cl">    <span class="ty">User</span> user = userRepository.<span class="fn">findByEmailAndDeletedAtIsNull</span>(email)</div>
+<div class="cl">            .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="ty">UnauthorizedException</span>(<span class="str">"..."</span>));</div>
+<div class="cl hl2">    <span class="kw">if</span> (!refreshToken.<span class="fn">equals</span>(user.<span class="fn">getRefreshToken</span>())) {   <span class="cm">// DB 대조</span></div>
+<div class="cl">        <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">UnauthorizedException</span>(<span class="str">"..."</span>);</div>
+<div class="cl">    }</div>
+<div class="cl">    <span class="ty">String</span> newAccessToken = jwtUtil.<span class="fn">generateToken</span>(user.<span class="fn">getEmail</span>());</div>
+<div class="cl">    <span class="ty">String</span> newRefreshToken = jwtUtil.<span class="fn">generateRefreshToken</span>(user.<span class="fn">getEmail</span>());</div>
+<div class="cl hl3">    user.<span class="fn">updateRefreshToken</span>(newRefreshToken);              <span class="cm">// 토큰 교체(Rotation)</span></div>
+<div class="cl">    <span class="kw">return</span> <span class="kw">new</span> <span class="ty">TokenPair</span>(user.<span class="fn">getId</span>(), newAccessToken, newRefreshToken);</div>
+<div class="cl">}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">09</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 10 : 핵심 로직 ② N+1 방지 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 10</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">core logic · 02</div>
+      <h1 class="title-sub">N+1 문제 방지를 위한 배치 조회</h1>
+
+      <div class="logic-stack">
+        <div class="compare-row">
+          <div class="compare-card before">
+            <div class="compare-tag">Before · 상품 20개</div>
+            <div class="compare-value">쿼리 21회</div>
+          </div>
+          <svg class="compare-arrow-mid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          <div class="compare-card after">
+            <div class="compare-tag">After · 상품 몇 개든</div>
+            <div class="compare-value">쿼리 2회</div>
+          </div>
+        </div>
+
+        <p class="logic-caption">카테고리 상품 카드에는 대표 성분도 함께 표시됩니다. 상품 ID를 먼저 모아 <b>연결 데이터 1회 + 재료 정보 1회</b> 조회로 축소하고, 결과를 Map으로 구성해 메모리에서 매칭 — 상품 수가 늘어도 쿼리 수는 항상 일정합니다.</p>
+
+        <div class="code-window">
+          <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">ProductQueryService.java</span></div>
+          <div class="code-body">
+<div class="cl"><span class="kw">private</span> <span class="ty">Map</span>&lt;<span class="ty">Long</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; <span class="fn">getKeyIngredientsByProductId</span>(<span class="ty">List</span>&lt;<span class="ty">Long</span>&gt; productIds) {</div>
+<div class="cl">    <span class="kw">if</span> (productIds.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="ty">Map</span>.<span class="fn">of</span>();</div>
+<div class="cl hl1">    <span class="cm">// ① 상품-재료 연결 데이터를 한 번에 조회 (IN 절)</span></div>
+<div class="cl">    <span class="ty">List</span>&lt;<span class="ty">ProductIngredient</span>&gt; links = productIngredientRepository.<span class="fn">findByProductIdInOrderByProductIdAscSequenceAsc</span>(productIds);</div>
+<div class="cl">    <span class="ty">List</span>&lt;<span class="ty">Long</span>&gt; ingredientIds = links.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="ty">ProductIngredient</span>::getIngredientId).<span class="fn">distinct</span>().<span class="fn">toList</span>();</div>
+<div class="cl hl2">    <span class="cm">// ② 필요한 재료 정보도 한 번에 조회</span></div>
+<div class="cl">    <span class="ty">Map</span>&lt;<span class="ty">Long</span>, <span class="ty">String</span>&gt; ingredientNameById = ingredientRepository.<span class="fn">findAllById</span>(ingredientIds).stream()</div>
+<div class="cl">            .<span class="fn">collect</span>(<span class="ty">Collectors</span>.<span class="fn">toMap</span>(<span class="ty">Ingredient</span>::getId, <span class="ty">Ingredient</span>::getName));</div>
+<div class="cl hl3">    <span class="cm">// ③ 메모리에서 Map으로 매칭 (상품별 최대 3개까지만)</span></div>
+<div class="cl">    <span class="ty">Map</span>&lt;<span class="ty">Long</span>, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; result = <span class="kw">new</span> <span class="ty">LinkedHashMap</span>&lt;&gt;();</div>
+<div class="cl">    <span class="kw">for</span> (<span class="ty">ProductIngredient</span> link : links) {</div>
+<div class="cl">        ... names.<span class="fn">add</span>(name);</div>
+<div class="cl">    }</div>
+<div class="cl">    <span class="kw">return</span> result;</div>
+<div class="cl">}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">10</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 11 : 핵심 로직 ③ 맞춤 추천 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 11</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">core logic · 03</div>
+      <h1 class="title-sub">취향 · 알레르기 기반 맞춤 추천</h1>
+
+      <div class="logic-stack">
+        <div class="pill-flow">
+          <span class="pf-step">알레르기 · 비선호 성분 하드 필터</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-step">선호 카테고리 내 점수순 추천</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-step">부족분 전체 상품에서 보완</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-step">최종 추천 리스트</span>
+        </div>
+
+        <p class="logic-caption">알레르기 · 비선호 성분이 포함된 상품은 후보에서 <b>완전 제외(하드 필터)</b>하고, 선호 카테고리 상품을 점수 높은 순으로 우선 추천합니다. 선호 카테고리 미설정 유저도 전체 상품 기준으로 추천되어 <b>콜드스타트</b>에 대응합니다.</p>
+
+        <div class="code-window">
+          <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">RecommendationService.java</span></div>
+          <div class="code-body">
+<div class="cl"><span class="kw">public</span> <span class="ty">ProductRecommendationResponse</span> <span class="fn">getRecommendations</span>(<span class="ty">Long</span> userId, <span class="kw">int</span> size) {</div>
+<div class="cl hl1">    <span class="cm">// ① 선호 카테고리 수집</span></div>
+<div class="cl">    <span class="ty">List</span>&lt;<span class="ty">Long</span>&gt; preferredCategoryIds = ...;</div>
+<div class="cl hl2">    <span class="cm">// ② 알러지 + 비선호 성분 → 제외할 상품 ID 수집 (하드 필터)</span></div>
+<div class="cl">    <span class="ty">List</span>&lt;<span class="ty">Long</span>&gt; excludedProductIds = ...;</div>
+<div class="cl hl3">    <span class="cm">// ③ 1차: 선호 카테고리 안에서 점수 높은 순으로 채움</span></div>
+<div class="cl">    <span class="ty">List</span>&lt;<span class="ty">Product</span>&gt; preferredMatches = preferredCategoryIds.<span class="fn">isEmpty</span>()</div>
+<div class="cl">            ? <span class="ty">List</span>.<span class="fn">of</span>()</div>
+<div class="cl">            : productRepository.<span class="fn">findRecommendedByCategoryIds</span>(preferredCategoryIds, ...);</div>
+<div class="cl hl4">    <span class="cm">// ④ 부족하면 2차: 카테고리 무관 전체 상품에서 나머지 보완 (콜드스타트 대응)</span></div>
+<div class="cl">    <span class="kw">if</span> (content.<span class="fn">size</span>() &lt; size) {</div>
+<div class="cl">        <span class="ty">List</span>&lt;<span class="ty">Product</span>&gt; fallback = productRepository.<span class="fn">findRecommendedFallback</span>(...);</div>
+<div class="cl">        content.<span class="fn">addAll</span>(...);</div>
+<div class="cl">    }</div>
+<div class="cl">    <span class="kw">return</span> <span class="kw">new</span> <span class="ty">ProductRecommendationResponse</span>(content);</div>
+<div class="cl">}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">11</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 12 : 프론트엔드 (섹션 구분) ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 12</div>
+  <div class="slide divider alt">
+    <div class="divider-decor"><span class="d1"></span><span class="d2"></span></div>
+    <div class="divider-wrap">
+      <span class="divider-label">Frontend</span>
+      <h1 class="divider-title">프론트엔드</h1>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M7 12.5l3 3 7-7.5" stroke="#6D28D9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">12</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 13 : 검색 · 카테고리 · 정렬 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 13</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">frontend · search</div>
+      <h1 class="title-sub">검색 · 카테고리 · 정렬</h1>
+
+      <div class="logic-split">
+        <div class="reissue-flow">
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13"/><path d="M13 4l4 4-4 4"/><path d="M20 16H7"/><path d="M11 12l-4 4 4 4"/></svg></div>
+            <div class="rf-text"><div class="rf-label">Mock → 실서버 전환</div><div class="rf-desc">개발 초기엔 MSW로 Mock API 구성, 이후 실제 서버로 교체</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg></div>
+            <div class="rf-text"><div class="rf-label">상태 · API 연결</div><div class="rf-desc">검색어 · 카테고리 · 페이지 · 정렬 상태를 요청과 자연스럽게 연결</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16"/><path d="M4 7l3-3 3 3"/><path d="M17 20V4"/><path d="M20 17l-3 3-3-3"/></svg></div>
+            <div class="rf-text"><div class="rf-label">정렬은 Query Parameter</div><div class="rf-desc">프론트 직접 정렬 없이 백엔드로 위임 후 결과만 렌더링</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="7" rx="1.2"/><rect x="13" y="4" width="8" height="7" rx="1.2"/><rect x="3" y="13" width="18" height="7" rx="1.2"/><circle cx="6" cy="7.5" r=".6" fill="currentColor" stroke="none"/><circle cx="16" cy="7.5" r=".6" fill="currentColor" stroke="none"/><circle cx="6" cy="16.5" r=".6" fill="currentColor" stroke="none"/></svg></div>
+            <div class="rf-text"><div class="rf-label">BEST 5 분리 호출</div><div class="rf-desc">카테고리 변경 시만 재조회해 불필요한 API 호출 방지</div></div>
+          </div>
+        </div>
+
+        <div class="logic-code">
+          <div class="code-window">
+            <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">CategoryPage.jsx</span></div>
+            <div class="code-body">
+<div class="cl"><span class="fn">useEffect</span>(() =&gt; {</div>
+<div class="cl">  fetchBestProducts(selectedCode);</div>
+<div class="cl hl1">}, [selectedCode]);   <span class="cm">// 카테고리가 바뀔 때만 BEST 5를 다시 조회</span></div>
+<div class="cl">&nbsp;</div>
+<div class="cl"><span class="fn">useEffect</span>(() =&gt; {</div>
+<div class="cl">  fetchCategoryProducts(selectedCode, page, sort);</div>
+<div class="cl hl2">}, [selectedCode, page, sort]);   <span class="cm">// 카테고리·페이지·정렬 기준이 바뀌면 전체 상품만 다시 조회</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">13</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 14 : 핵심 로직 ④ 이메일 인증 · 닉네임 중복 확인 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 14</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">frontend · auth</div>
+      <h1 class="title-sub">이메일 인증 · 닉네임 중복 확인</h1>
+
+      <div class="logic-split">
+        <div class="reissue-flow">
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+            <div class="rf-text"><div class="rf-label">이메일 인증</div><div class="rf-desc">여러 단계가 있는 인증 기능의 상태를 각각 분리 관리</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.4"/><path d="M4.5 20c0-3.6 2.5-6 5.5-6s5.5 2.4 5.5 6"/><path d="M16 14.5l1.6 1.6 3-3.2"/></svg></div>
+            <div class="rf-text"><div class="rf-label">닉네임 중복 확인</div><div class="rf-desc">입력값을 재수정하면 기존 확인 상태를 초기화해 재확인 유도</div></div>
+          </div>
+        </div>
+
+        <div class="logic-code">
+          <div class="code-window">
+            <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">SignupForm.jsx</span></div>
+            <div class="code-body">
+<div class="cl"><span class="kw">const</span> <span class="fn">handleNicknameChange</span> = (value) =&gt; {</div>
+<div class="cl">  <span class="fn">setNickname</span>(value);</div>
+<div class="cl hl1">  <span class="fn">setNicknameChecked</span>(<span class="kw">false</span>);   <span class="cm">// 입력값이 바뀌면 기존 중복 확인 결과 무효화</span></div>
+<div class="cl hl1">  <span class="fn">setNicknameAvailable</span>(<span class="kw">false</span>);   <span class="cm">// 다시 중복 확인하기 전까지 사용 가능 상태도 초기화</span></div>
+<div class="cl">};</div>
+<div class="cl">&nbsp;</div>
+<div class="cl"><span class="kw">const</span> available = <span class="kw">await</span> <span class="fn">checkNickname</span>(nickname);   <span class="cm">// 백엔드에 닉네임 중복 확인 요청</span></div>
+<div class="cl"><span class="fn">setNicknameChecked</span>(<span class="kw">true</span>);   <span class="cm">// 중복 확인을 수행했다는 상태 저장</span></div>
+<div class="cl hl2"><span class="fn">setNicknameAvailable</span>(available === <span class="kw">true</span>);   <span class="cm">// API 응답에 따라 실제 사용 가능 여부 저장</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">14</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 15 : 핵심 로직 ④ 소셜 로그인 · Access Token 연결 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 15</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">frontend · auth</div>
+      <h1 class="title-sub">소셜 로그인 · Access Token 연결</h1>
+
+      <div class="logic-split">
+        <div class="reissue-flow">
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M8.1 11l7.8-4"/><path d="M8.1 13l7.8 4"/></svg></div>
+            <div class="rf-text"><div class="rf-label">소셜 로그인 (isNewUser 분기)</div><div class="rf-desc">신규 사용자는 온보딩으로, 기존 사용자는 메인으로 이동</div></div>
+          </div>
+          <div class="rf-item">
+            <div class="rf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="8" height="8" rx="4"/><rect x="13" y="8" width="8" height="8" rx="4"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+            <div class="rf-text"><div class="rf-label">Access Token 연결</div><div class="rf-desc">최근 조회 · 비교함 · 프로필 등 사용자별 요청에 사용</div></div>
+          </div>
+        </div>
+
+        <div class="logic-code">
+          <div class="code-window">
+            <div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-filename">OAuthCallback.jsx</span></div>
+            <div class="code-body">
+<div class="cl hl1"><span class="ty">localStorage</span>.<span class="fn">setItem</span>(<span class="str">"accessToken"</span>, result.data.accessToken);   <span class="cm">// 로그인 성공 후 Access Token 저장</span></div>
+<div class="cl">&nbsp;</div>
+<div class="cl"><span class="kw">if</span> (result.data.isNewUser) {</div>
+<div class="cl hl2">  <span class="fn">navigate</span>(<span class="str">"/onboarding"</span>);   <span class="cm">// 신규 사용자 → 추가 정보/취향 설정 온보딩으로 이동</span></div>
+<div class="cl">} <span class="kw">else</span> {</div>
+<div class="cl hl3">  <span class="fn">navigate</span>(<span class="str">"/"</span>);   <span class="cm">// 기존 사용자 → 바로 메인 페이지로 이동</span></div>
+<div class="cl">}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">15</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 16 : 반응형 UI · 배포 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 16</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">frontend · responsive</div>
+      <h1 class="title-main">반응형 UI · 배포</h1>
+
+      <div class="fe-split">
+        <div class="fe-bullets">
+          <ul class="chk-list">
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>데스크톱은 전체 navigation 노출 / 화면이 좁아지면 <b>햄버거 버튼 + 사이드 메뉴</b>로 전환</span></li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>GitHub Pages는 하위 경로에서 실행 → Vite <b>base</b> 설정과 React Router <b>basename</b>을 일치</span></li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>특정 URL 직접 접근 시에도 SPA 라우팅이 유지되도록 fallback 처리 적용</span></li>
+            <li><svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7.5 12.5l3 3 6-6.5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>OAuth Redirect URI, 백엔드 API 주소는 로컬 / 배포 환경별로 환경변수 분리 관리</span></li>
+          </ul>
+        </div>
+        <div class="fe-visual">
+          <div class="device-row">
+            <div>
+              <div class="device-frame desktop">
+                <div class="device-topbar"><span class="logo-dot"></span><span class="nav-item"></span><span class="nav-item"></span><span class="nav-item"></span></div>
+                <div class="device-body"><div class="bar w100"></div><div class="bar w80"></div><div class="bar w60"></div></div>
+              </div>
+              <div class="device-caption">Desktop</div>
+            </div>
+            <div>
+              <div class="device-frame mobile">
+                <div class="device-topbar mtop"><span class="logo-dot"></span><span class="burger"><span></span><span></span><span></span></span></div>
+                <div class="device-body"><div class="bar w100"></div><div class="bar w100"></div></div>
+              </div>
+              <div class="device-caption">Mobile</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">16</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 17 : 시연 안내 (섹션 구분) ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 17</div>
+  <div class="slide divider">
+    <div class="divider-decor"><span class="d1"></span><span class="d2"></span></div>
+    <div class="divider-wrap">
+      <span class="divider-label">Demo</span>
+      <h1 class="divider-title" style="font-size:3.6cqw;">이제 실제 서비스를<br>시연해보겠습니다</h1>
+      <div class="divider-url">ecc2team.github.io/frontend/</div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M7 12.5l3 3 7-7.5" stroke="#6D28D9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">17</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 18 : 아쉬운 점 및 보완할 점 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 18</div>
+  <div class="slide">
+    <div class="slide-pad">
+      <div class="eyebrow">retrospective</div>
+      <h1 class="title-main">아쉬운 점 및 보완할 점</h1>
+
+      <div class="retro-row">
+        <div class="retro-card">
+          <div class="retro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+          <p>공구 기능을 완성하지 못해 <b>다음 스프린트에 보완</b> 예정</p>
+        </div>
+        <div class="retro-card">
+          <div class="retro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+          <p>더 다양한 <b>제품 데이터</b>를 추가하고 싶음</p>
+        </div>
+        <div class="retro-card">
+          <div class="retro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+          <p>HttpOnly 쿠키 대신 <b>Redis에 세션 저장</b> → 로그아웃 · 토큰 무효화를 서버가 즉시 제어하도록 개선 학습 예정</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="url(#brandGrad)"/><path d="M7 12.5l3 3 7-7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ZeroPick</span></span>
+      <span class="page-num">18</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SLIDE 19 : 마무리 ================= -->
+<section class="slide-stage">
+  <div class="stage-label">ZEROPICK · SLIDE 19</div>
+  <div class="slide cover">
+    <div class="cover-decor"><span class="c1"></span><span class="c2"></span></div>
+    <div class="closing-wrap">
+      <p class="closing-quote">ZeroPick은 단순 검색 서비스가 아니라, <b>탐색 → 분석 → 개인화 추천 → 비교 → 기록</b>까지 연결한 서비스입니다.</p>
+      <div class="closing-points">
+        <span class="cp"><b>백엔드</b> · 인증 보안 + 데이터 조회 성능 + 사용자 취향 반영 추천 로직</span>
+        <span class="cp"><b>프론트엔드</b> · 검색·정렬, 상품 상세, 비교, 인증, 추천을 실제 사용 흐름에 맞게 연결</span>
+        <span class="cp"><b>경험</b> · Mock API → 실제 서버 연동 → 배포까지, 하나의 서비스로 동작하는 과정을 경험</span>
+      </div>
+      <p class="closing-final">이상으로 ZeroPick 서비스 소개를 마치겠습니다. 감사합니다.</p>
+      <div class="link-row" style="justify-content:center;">
+        <span class="link-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>Service</span>
+        <span class="link-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>API Docs</span>
+        <span class="link-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>GitHub</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span></span>
+      <span class="page-num">19</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
